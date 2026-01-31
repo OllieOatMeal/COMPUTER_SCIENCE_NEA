@@ -88,6 +88,8 @@ class singleplayer:
         self.user_deck = []        # Player's hand
         self.dealer_deck = []      # Dealer's hand
 
+        self.user_val = 0
+
     def clear_screen(self):
         # Removes all widgets from the screen
         for element in self.elements.values():
@@ -255,6 +257,7 @@ class singleplayer:
     def check_winner(self):
         # Determines the winner and ends the game
         user_val = self.get_hand_value(self.user_deck)
+        self.user_val = user_val
         dealer_val = self.get_hand_value(self.dealer_deck)
         if dealer_val > 21 or user_val > dealer_val:
             self.end_game("You win!", win=True)
@@ -264,17 +267,20 @@ class singleplayer:
             self.end_game("Push (Draw).")
 
     def end_game(self, message, win=False):
-        # Ends the round, updates balance, and shows result
-        factor = r.randint(1, 100)
-        self.game_over = True
-        if win:
-            self.balance += (10*factor)
+        # Ends the round, updates balance, and shows result#
+        if self.user_val == 21 and len(self.user_deck) == 2:
+            self.balance += 500
         else:
-            self.balance -= (10*factor)
-            if self.balance <= 0:
-                self.balance = 0
+            factor = r.randint(1, 100)
+            self.game_over = True
+            if win:
+                self.balance += (10*factor)
             else:
-                pass
+                self.balance -= (10*factor)
+                if self.balance <= 0:
+                    self.balance = 0
+                else:
+                    pass
 
         self.update_ui()
         result = Label(self.window, text=message, font=(font, 40, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white')
