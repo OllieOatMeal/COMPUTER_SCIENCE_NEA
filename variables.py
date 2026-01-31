@@ -4,7 +4,7 @@ game_name = "Casino Royale"
 game_version = ("V10.2")
 game_creator = "Ollie ONeill"
 
-path = "C:\CSNEA\Computer-Science-NEA-master"
+path = "C:\COMPUTER_SCIENCE_NEA\COMPUTER_SCIENCE_NEA"
 
 main_background = path+"\images\main_table_background.gif"
 database_path = path+"\database\database.db"

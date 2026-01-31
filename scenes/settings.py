@@ -31,7 +31,7 @@ class settings_scene:
             self.admin_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
             self.admin_frame.place(relx=0.05, rely=0.55, anchor="w", width=1600, height=200)
             current_user_slected = Label(self.admin_frame, text="", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg="#ffffff")
-            current_user_slected.place(relx= ,rely= ,anchor="")
+            current_user_slected.place(relx=0.1 ,rely=0.1 ,anchor="center")
             self.elements.update({
             "admin_frame": self.admin_frame,
             "current_user_selected": current_user_slected,
