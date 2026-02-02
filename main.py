@@ -1,4 +1,5 @@
 ### CASINO ROYALE - MAIN
+
 # IMPORTS
 
 from scenes.login_scene import *
@@ -13,13 +14,14 @@ class Main:
         self.window = None
         self.canvas = None
 
-    # Function to run the game-
+    # Function to run the main window
     def run(self):
         # Create the window with basic attributes
         self.window = Tk()
-        self.window.geometry("1280x720")  # or another large enough size
+        self.window.geometry("1280x720")
         self.window.title(f'{game_name} - {game_version} | {game_creator}')
         self.window.attributes('-fullscreen', True)
+        self.window.iconphoto(True, PhotoImage(file='images/icon.png'))
 
         self.canvas = Canvas(self.window, width=1920, height=1080)
 

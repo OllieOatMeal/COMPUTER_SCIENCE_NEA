@@ -1,7 +1,7 @@
 
 
 game_name = "Casino Royale"
-game_version = ("V10.2")
+game_version = "V14.5"
 game_creator = "Ollie ONeill"
 
 path = "C:\COMPUTER_SCIENCE_NEA\COMPUTER_SCIENCE_NEA"
