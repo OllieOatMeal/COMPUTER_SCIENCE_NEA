@@ -3,7 +3,7 @@ Placeholder for multiplayer game (coming soon)
 """
 
 from tkinter import *
-from variables import *
+from variables import frame_colour, button_colour, font, main_background
 
 
 class multiplayer:

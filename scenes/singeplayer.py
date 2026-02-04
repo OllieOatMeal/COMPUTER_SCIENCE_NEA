@@ -5,7 +5,7 @@ Handles all the game logic, betting, dealing cards, etc.
 
 from tkinter import *
 import random as r
-from variables import *
+from variables import path, card_path, font, button_colour, database_path
 from Utils.db import increment_games_and_update_money, delete_user
 
 

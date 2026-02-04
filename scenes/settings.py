@@ -3,11 +3,10 @@ Settings screen where users can change volume and pick music
 """
 
 from tkinter import *
-from music import *
-from variables import *
+from music import music
+from variables import frame_colour, button_colour, font, main_background
 import pygame
 from Utils.json_handler import set_stored_music
-import json
 
 
 class settings_scene:

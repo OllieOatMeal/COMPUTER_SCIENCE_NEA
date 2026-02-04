@@ -5,10 +5,10 @@ Lets users create an account or login to an existing one
 
 from Utils.db import get_user_password, user_exists, create_user
 from tkinter import *
-from scenes.main_menu import *
-from variables import *
-import json
-from music import *
+import sys
+from scenes.main_menu import main_menu
+from variables import font, button_colour, frame_colour, main_background
+from music import music
 from Utils.json_handler import get_logged_in_user, get_stored_music
 
 # Input validation constants

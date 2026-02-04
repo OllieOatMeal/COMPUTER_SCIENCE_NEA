@@ -3,7 +3,7 @@ Shows the credits with who made the game
 """
 
 from tkinter import *
-from variables import *
+from variables import frame_colour, button_colour, font, main_background
 
 
 class credits_scene:

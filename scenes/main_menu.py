@@ -4,10 +4,12 @@ Shows navigation buttons for play, settings, leaderboard, etc.
 """
 
 import random
-from scenes.quit_menu import *
-from scenes.credits import *
-from scenes.settings import *
-from scenes.main_game import *
+from tkinter import *
+from scenes.quit_menu import quit_menu
+from scenes.credits import credits_scene
+from scenes.settings import settings_scene
+from scenes.main_game import main_game
+from variables import quotes_path, font, button_colour, frame_colour, main_background
 
 
 def get_random_quote():

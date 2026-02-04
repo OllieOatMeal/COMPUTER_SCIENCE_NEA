@@ -4,7 +4,7 @@ Shows the leaderboard with all players ranked by games played and money
 
 from tkinter import *
 from Utils.db import get_leaderboard
-from variables import *
+from variables import frame_colour, button_colour, font, database_path, main_background
 
 
 def comma_number(balance):

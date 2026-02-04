@@ -4,11 +4,11 @@ Sets up the window and starts the login scene
 """
 
 # IMPORTS
-from scenes.login_scene import *
-from scenes.main_menu import *
-from music import *
+from tkinter import *
+from scenes.login_scene import login
+from music import music
 from Utils.encryption_service import EncryptionService
-from variables import *
+from variables import game_name, game_version, game_creator
 
 
 class Main:

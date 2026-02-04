@@ -5,9 +5,8 @@ Saves your info before closing
 
 import sys
 from tkinter import *
-from variables import *
+from variables import frame_colour, button_colour, font, main_background
 from Utils.json_handler import set_logged_in_user
-import json
 
 
 def tkquit():

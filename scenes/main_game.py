@@ -3,9 +3,10 @@ Screen to pick which game you want to play - singleplayer or multiplayer
 """
 
 from tkinter import *
-from scenes.singeplayer import *
-from scenes.multiplayer import *
+from scenes.singeplayer import singleplayer
+from scenes.multiplayer import multiplayer
 from Utils.db import get_money
+from variables import frame_colour, button_colour, font, main_background
 
 
 class main_game:
