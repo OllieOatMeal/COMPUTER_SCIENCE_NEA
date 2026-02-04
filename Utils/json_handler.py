@@ -1,7 +1,6 @@
 """
-JSON handler utilities that integrate with the project's EncryptionService.
-Provides safe read/update functions which preserve other keys and optionally
-encrypt/decrypt specific fields using an EncryptionService instance.
+Reads and writes JSON files for storing settings and user data
+Can optionally encrypt/decrypt values using the EncryptionService
 """
 import json
 import os
@@ -9,7 +8,7 @@ from typing import Any, Dict, Optional
 
 
 def load_json(path: str) -> Dict[str, Any]:
-    """Load JSON from `path`. Returns empty dict if file not found or invalid."""
+    """Load a JSON file and return the data as a dict"""
     try:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -18,7 +17,7 @@ def load_json(path: str) -> Dict[str, Any]:
 
 
 def save_json(path: str, data: Dict[str, Any]) -> None:
-    """Write `data` to `path` atomically (simple overwrite)."""
+    """Save a dict to a JSON file"""
     # Ensure parent directory exists
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -26,11 +25,7 @@ def save_json(path: str, data: Dict[str, Any]) -> None:
 
 
 def get_value(path: str, key: str, protecting: Optional[object] = None, encrypted: bool = False) -> Optional[Any]:
-    """Get `key` from JSON file at `path`.
-
-    If `encrypted` is True and `protecting` is provided, attempt to decrypt the value.
-    Returns None if key is not present.
-    """
+    """Get a value from a JSON file and optionally decrypt it"""
     data = load_json(path)
     if key not in data:
         return None

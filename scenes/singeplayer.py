@@ -1,7 +1,6 @@
 """
-Singleplayer Game Scene Module
-Purpose: Implements single-player card game functionality
-Manages game logic, card dealing, betting, and player interactions
+Singleplayer blackjack game
+Handles all the game logic, betting, dealing cards, etc.
 """
 
 from tkinter import *
@@ -10,9 +9,9 @@ from variables import *
 from Utils.db import increment_games_and_update_money, delete_user
 
 
-# Represents a single playing card
+# A playing card with a name, value, and image
 class Card:
-    """Card class for game card representation"""
+    """A single card in the deck"""
     def __init__(self, name, value, image_path):
         self.name = name
         self.value = value
@@ -481,7 +480,7 @@ class singleplayer:
         if "double_button" in self.elements:
             self.elements["double_button"].place(x=1150, y=1000)
         if "split_button" in self.elements:
-            self.elements["split_button"].place(x=1250, y=1000)
+            self.elements["split_button"].place(x=1350, y=1000)
         # Place static deck images vertically at left
         screenheight = self.window.winfo_screenheight()
         start_y = screenheight // 2 - 200

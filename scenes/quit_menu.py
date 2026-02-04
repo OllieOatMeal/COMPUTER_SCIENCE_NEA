@@ -1,7 +1,6 @@
 """
-Quit Menu Scene Module
-Purpose: Handles confirmation dialog for quitting the application
-Saves user session data before exit
+Screen that asks if you want to quit
+Saves your info before closing
 """
 
 import sys
@@ -12,12 +11,15 @@ import json
 
 
 def tkquit():
-    """Exit the application"""
+    """Close the game"""
     sys.exit()
 
 
 class quit_menu:
-    """
+    """Quit confirmation screen"""
+    
+    def old_init(self):
+        """
     Quit menu scene controller
     Displays confirmation dialog and handles user session data
     """

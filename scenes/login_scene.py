@@ -1,7 +1,6 @@
 """
-Login Scene Module
-Purpose: Handles user authentication (login/signup) and pre-loaded user detection
-Validates input, manages database queries, and transitions to main menu
+Login and signup screen
+Lets users create an account or login to an existing one
 """
 
 from Utils.db import get_user_password, user_exists, create_user
@@ -19,15 +18,12 @@ MAX_LENGTH = 12  # Maximum characters for username and password
 
 
 def tkquit():
-    """Exit the application"""
+    """Close the application"""
     sys.exit()
 
 
 class login:
-    """
-    Login scene controller
-    Handles user authentication and account management
-    """
+    """The login screen where users sign in or create accounts"""
 
     def __init__(self, window, protecting, music_controller=None):
         """

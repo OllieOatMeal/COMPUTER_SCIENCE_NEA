@@ -1,13 +1,11 @@
 """
-CASINO ROYALE - Global Variables Module
-Author: Ollie O'Neill
-Purpose: Centralised configuration for the Casino Royale application
-Contains game metadata, file paths, and UI styling constants
+Global settings and file paths for my Casino Royale game
+All the constants I use throughout the app go here
 """
 
 # Game metadata
 game_name = "Casino Royale"
-game_version = "V15"
+game_version = "V15.1"
 game_creator = "Ollie O'Neill"
 
 # Application directory path

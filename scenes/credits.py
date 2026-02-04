@@ -1,7 +1,5 @@
 """
-Credits Scene Module
-Purpose: Displays application credits and acknowledgements
-Shows contributors and third-party resources used in the project
+Shows the credits with who made the game
 """
 
 from tkinter import *
@@ -9,10 +7,7 @@ from variables import *
 
 
 class credits_scene:
-    """
-    Credits scene controller
-    Displays game credits and attribution information
-    """
+    """Credits screen"""
 
     def __init__(self, window, username, protecting):
         """

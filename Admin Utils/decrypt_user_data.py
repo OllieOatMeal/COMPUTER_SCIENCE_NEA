@@ -1,13 +1,12 @@
 """
-Database decryption utility for troubleshooting
-Purpose: Decrypt and display user data for a specific UserID
-Useful for viewing encrypted database records
+Tool to decrypt and look up user data from the database
+Useful when I need to check what a specific user's encrypted info actually is
 """
 import sqlite3
 import sys
 import os
 
-# Add parent directory to path so we can import from root
+# Set up the path so we can import variables and encryption service from the root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from variables import database_path
@@ -16,20 +15,17 @@ from Utils.encryption_service import EncryptionService
 
 def decrypt_user_by_id(user_id):
     """
-    Decrypt and display all data for a specific user.
-    
-    Args:
-        user_id: The UserID to decrypt data for
+    Takes a UserID and shows me all their data decrypted
     """
     try:
         # Initialize encryption service
         protecting = EncryptionService()
         
-        # Connect to database
+        # Get the user record from database
         conn = sqlite3.connect(database_path)
         cur = conn.cursor()
         
-        # Query user by UserID
+        # Get the row for this UserID
         cur.execute(
             "SELECT UserID, UserName, Password, Money, GamesPlayed FROM Users WHERE UserID = ?",
             (user_id,)
@@ -43,14 +39,14 @@ def decrypt_user_by_id(user_id):
         
         user_id, encrypted_username, encrypted_password, encrypted_money, encrypted_games = user
         
-        # Decrypt all fields
+        # Decrypt each field to readable text
         try:
             decrypted_username = protecting.decrypt(encrypted_username) if encrypted_username else ""
             decrypted_password = protecting.decrypt(encrypted_password) if encrypted_password else ""
             decrypted_money = protecting.decrypt(encrypted_money) if encrypted_money else "0"
             decrypted_games = protecting.decrypt(encrypted_games) if encrypted_games else "0"
             
-            # Display results
+            # Show the decrypted user info in a nice format
             print("\n" + "="*60)
             print(f"USER DATA - UserID {user_id}")
             print("="*60)
@@ -79,7 +75,7 @@ def decrypt_user_by_id(user_id):
 
 
 def main():
-    """Main interactive loop for decrypting user data"""
+    """Let the user type in UserID numbers to decrypt them one by one"""
     print("="*60)
     print("USER DATA DECRYPTION UTILITY")
     print("="*60)
@@ -92,7 +88,7 @@ def main():
                 print("\nGoodbye!")
                 break
             
-            # Validate input is a number
+            # Make sure the input is actually a number
             try:
                 user_id = int(user_input)
             except ValueError:

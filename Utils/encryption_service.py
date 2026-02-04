@@ -1,7 +1,6 @@
 """
-Encryption Service Module
-Purpose: Provides XOR-based encryption and decryption with Base64 encoding
-Uses a key from environment variables for secure data protection
+My encryption service that uses XOR with a key from the environment
+Encrypts data using Base64 encoding
 """
 
 import json
@@ -10,13 +9,10 @@ import base64
 
 
 class EncryptionService:
-    """
-    Encryption service for securing user data
-    Implements XOR cipher with salt and Base64 encoding
-    """
+    """Encrypts and decrypts data using XOR cipher with a salt"""
 
     def __init__(self):
-        """Initialise the encryption service and load the key from environment"""
+        """Initialize and load the encryption key from environment"""
         self.key = None
         self.get_key()  # Load key immediately on init
 
@@ -34,15 +30,13 @@ class EncryptionService:
         """
         Apply XOR operation to data using the encryption key
         Args: data (bytes) - data to encrypt/decrypt
-        Returns: bytes - XOR processed data
+        Returns: bytes - XOR encrypted/decrypted data
         """
         result = bytearray()
-
         # XOR each byte with corresponding key character
         for i in range(len(data)):
             key_char = self.key[i % len(self.key)]
             result.append(data[i] ^ ord(key_char))
-
         return bytes(result)
 
     def encrypt(self, plaintext):

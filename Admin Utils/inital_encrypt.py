@@ -1,8 +1,6 @@
 """
-Initial Encryption Utility Script
-Purpose: Test script for encrypting initial user credentials
-Used to generate encrypted values for test user accounts
-NOTE: This is a utility script
+Encryption tool I use to test encrypting and decrypting data
+Useful for testing how the encryption works before putting stuff in the database
 """
 
 import json
@@ -11,20 +9,20 @@ import base64
 
 
 class EncryptionService:
-    """Encryption service for securing user data"""
+    """Handles all the encryption and decryption using XOR cipher"""
     def __init__(self):
         self.key = None
         self.get_key()  # Load key immediately on init
 
     def get_key(self):
-        """Retrieve encryption key from environment variables"""
+        """Gets the encryption key from the environment variable CSNEA_KEY"""
         key = os.getenv("CSNEA_KEY")
         if key is None:
             raise ValueError("Encryption key not found in environment variables.")
         self.key = key
 
     def _xor_process(self, data):
-        """Apply XOR operation to data using the encryption key"""
+        """Does the XOR encryption/decryption on the data"""
         result = bytearray()
 
         for i in range(len(data)):
@@ -34,7 +32,7 @@ class EncryptionService:
         return bytes(result)
 
     def encrypt(self, plaintext):
-        """Encrypt plaintext using XOR cipher with salt"""
+        """Takes plain text and turns it into encrypted gibberish that can't be read"""
         salt = os.urandom(8)
         data = salt + plaintext.encode('utf-8')
 
@@ -44,7 +42,7 @@ class EncryptionService:
         return encoded.decode('utf-8')
 
     def decrypt(self, ciphertext):
-        """Decrypt Base64 encoded ciphertext"""
+        """Takes the encrypted text and converts it back to readable plain text"""
         encrypted_bytes = base64.b64decode(ciphertext)
         decrypted_data = self._xor_process(encrypted_bytes)
 
@@ -52,7 +50,7 @@ class EncryptionService:
         return plaintext_bytes.decode('utf-8')
 
 
-# TEST ENCRYPTION
+# Test it out
 if __name__ == "__main__":
     Protection = EncryptionService()
     print(Protection.encrypt("admin"))

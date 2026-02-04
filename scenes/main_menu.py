@@ -1,7 +1,6 @@
 """
-Main Menu Scene Module
-Purpose: Central hub after login showing game options and user information
-Provides access to play, settings, credits, and logout functionality
+The main menu after you log in
+Shows navigation buttons for play, settings, leaderboard, etc.
 """
 
 import random

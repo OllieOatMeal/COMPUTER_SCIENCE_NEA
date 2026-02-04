@@ -1,9 +1,6 @@
 """
-Database helper utilities for SQLite interactions.
-Centralises SQL used by scenes; encrypts/decrypts all user fields except UserID.
-
-All fields (UserName, Password, Money, GamesPlayed) are encrypted on write and 
-decrypted on read when protecting (EncryptionService) is provided.
+All my database functions in one place
+Handles encrypting/decrypting data when reading from and writing to the database
 """
 import sqlite3
 from typing import List, Tuple, Optional
@@ -15,16 +12,7 @@ def _connect():
 
 
 def get_user_password(username: str, protecting=None) -> Optional[str]:
-    """
-    Get password for a user. Encrypts username to query, returns decrypted password.
-    
-    Args:
-        username: Plain text username
-        protecting: EncryptionService instance (optional). If provided, encrypts/decrypts fields.
-    
-    Returns:
-        Plain text password or None if user not found
-    """
+    """Look up a user and return their password"""
     try:
         conn = _connect()
         cur = conn.cursor()

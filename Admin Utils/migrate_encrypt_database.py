@@ -1,16 +1,12 @@
 """
-Database migration script to encrypt all existing user data.
-Encrypts: UserName, Password, Money, GamesPlayed
-Leaves unencrypted: UserID (primary key)
-
-Run this ONCE to convert existing plaintext data to encrypted form.
-After running, all database operations should use the updated db.py with encryption.
+Script to encrypt all user data in the database
+Run this one time to convert everything from plaintext to encrypted
 """
 import sqlite3
 import os
 import sys
 
-# Add parent directory to path so we can import from root
+# Add parent directory to path so we can import everything from root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from variables import database_path
@@ -18,7 +14,7 @@ from Utils.encryption_service import EncryptionService
 
 
 def migrate_database():
-    """Encrypt all existing user data in the database."""
+    """Encrypt all the user data in the database"""
     try:
         # Initialize encryption service
         protecting = EncryptionService()

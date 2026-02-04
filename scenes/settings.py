@@ -1,7 +1,5 @@
 """
-Settings Scene Module
-Purpose: Provides music volume control and track selection
-Allows users to adjust audio preferences and save them
+Settings screen where users can change volume and pick music
 """
 
 from tkinter import *
@@ -13,10 +11,7 @@ import json
 
 
 class settings_scene:
-    """
-    Settings scene controller
-    Manages music volume and track selection interface
-    """
+    """Settings screen for audio preferences"""
     def __init__(self, window, username, protecting):
         """
         Initialise settings scene

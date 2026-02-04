@@ -1,7 +1,5 @@
 """
-Leaderboard Scene Module
-Purpose: Displays game statistics and player rankings
-Shows user scores sorted by games played and account balance
+Shows the leaderboard with all players ranked by games played and money
 """
 
 from tkinter import *
@@ -10,11 +8,7 @@ from variables import *
 
 
 def comma_number(balance):
-    """
-    Format number with comma thousands separator
-    Args: balance (int) - number to format
-    Returns: str - formatted number string
-    """
+    """Format a number to show commas in thousands places"""
     return "{:,}".format(balance)
 
 

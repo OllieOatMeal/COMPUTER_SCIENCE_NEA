@@ -1,7 +1,5 @@
 """
-Multiplayer Game Scene Module
-Purpose: Placeholder for multiplayer game functionality
-Reserved for future implementation of networked game features
+Placeholder for multiplayer game (coming soon)
 """
 
 from tkinter import *
@@ -9,7 +7,7 @@ from variables import *
 
 
 class multiplayer:
-    """Multiplayer game scene controller (currently under development)"""
+    """Multiplayer game (not finished yet)"""
     def __init__(self, window, username, balance, protecting):
         self.window = window
         self.username = username

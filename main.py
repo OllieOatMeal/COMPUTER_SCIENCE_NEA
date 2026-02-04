@@ -1,8 +1,6 @@
 """
-CASINO ROYALE - Main Application Module
-Author: Ollie O'Neill
-Purpose: Entry point for the Casino Royale gaming application
-Initialises the GUI window and orchestrates scene management
+Main entry point for my Casino Royale game
+Sets up the window and starts the login scene
 """
 
 # IMPORTS
@@ -14,21 +12,15 @@ from variables import *
 
 
 class Main:
-    """
-    Main application controller
-    Manages window creation and scene transitions
-    """
+    """Main window and scene controller for the game"""
 
     def __init__(self):
-        """Initialise the main application"""
+        """Set up the main window"""
         self.window = None  # Tkinter root window
         self.canvas = None  # Canvas for drawing
 
     def run(self):
-        """
-        Run the main application
-        Creates window, initialises services, and starts login scene
-        """
+        """Start the application and show the login screen"""
         # WINDOW INITIALISATION
         self.window = Tk()
         self.window.geometry("1280x720")
@@ -40,9 +32,9 @@ class Main:
         self.canvas = Canvas(self.window, width=1920, height=1080)
 
         # INITIALISE SERVICES AND SCENES
-        Protecting = EncryptionService()  # Create encryption service
-        Music_Controller = music()  # Create music controller
-        Login_Scene = login(self.window, Protecting, Music_Controller)  # Create login scene
+        Protecting = EncryptionService()  # Set up encryption
+        Music_Controller = music()  # Set up music player
+        Login_Scene = login(self.window, Protecting, Music_Controller)  # Create login
         
         # GET ENCRYPTION KEY
         Protecting.get_key()

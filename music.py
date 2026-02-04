@@ -1,7 +1,5 @@
 """
-Music Module
-Purpose: Manages audio playback, volume control, and track switching
-Uses Pygame mixer for audio handling
+Handles music and audio volume for the game
 """
 
 import pygame
@@ -9,10 +7,7 @@ from variables import *
 
 
 def load_music():
-    """
-    Load the default starting music file
-    Handles pygame.error exceptions gracefully
-    """
+    """Load the main music file"""
     try:
         pygame.mixer.music.load(start_music)
     except pygame.error as e:
@@ -26,8 +21,10 @@ class music:
     """
 
     def __init__(self):
-        """Initialise music controller with default settings"""
-        self.VOLUME = 50  # Default volume as percentage
+        """
+        Start with volume at 50%
+        """
+        self.VOLUME = 50
         self.MUSIC_MUTED = False
 
     def volume_up(self):
@@ -37,7 +34,7 @@ class music:
         """
         if self.VOLUME < 100:
             self.VOLUME += 10
-            pygame.mixer.music.set_volume(self.VOLUME / 100)
+        pygame.mixer.music.set_volume(self.VOLUME / 100)
 
     def volume_down(self):
         """
@@ -46,7 +43,7 @@ class music:
         """
         if self.VOLUME > 0:
             self.VOLUME -= 10
-            pygame.mixer.music.set_volume(self.VOLUME / 100)
+        pygame.mixer.music.set_volume(self.VOLUME / 100)
 
     def toggle_music(self):
         """

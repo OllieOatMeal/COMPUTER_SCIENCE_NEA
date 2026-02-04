@@ -1,7 +1,5 @@
 """
-Main Game Scene Module
-Purpose: Displays game mode selection and game launcher
-Handles singleplayer and multiplayer game initiations
+Screen to pick which game you want to play - singleplayer or multiplayer
 """
 
 from tkinter import *
@@ -11,10 +9,7 @@ from Utils.db import get_money
 
 
 class main_game:
-    """
-    Main game scene controller
-    Manages game mode selection and game launch
-    """
+    """Game mode selection screen"""
 
     def __init__(self, window, username, protecting):
         """
