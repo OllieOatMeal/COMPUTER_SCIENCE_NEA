@@ -26,10 +26,11 @@ class Main:
         self.canvas = Canvas(self.window, width=1920, height=1080)
 
         # Run main commands then loop the main
-        Login_Scene = login(self.window)
         Music_Controller = music()
-        Login_Scene.run()
+        Login_Scene = login(self.window)
         Music_Controller.run()
+        Login_Scene.run()
+        
 
         self.canvas.place(x=0, y=0)
         self.window.mainloop()

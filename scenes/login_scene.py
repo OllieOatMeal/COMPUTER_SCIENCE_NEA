@@ -3,6 +3,7 @@ from tkinter import *
 from scenes.main_menu import *
 from variables import *
 import json
+from music import *
 
 # Define disallowed characters lists (adjust as needed)
 DISALLOWED_USERNAME_CHARS = [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '/', '\\', '|', '{', '}', '[', ']', ':', ';', '"', "'", '<', '>', ',', '.', '?', '`', '~']
@@ -19,6 +20,8 @@ class login:
 
         self.username = None
         self.password = None
+
+        self.user_music = None
 
         self.elements = {}
         self.main_background = None
@@ -173,6 +176,8 @@ class login:
 
         if data["logged_in_user"] is not None:
             self.username = data["logged_in_user"]
+            user_music = data["stored_music"]
+            music.change_track(self, user_music)
             self.clear_login_screen()
             Main_Menu = main_menu(self.window, self.username)
             Main_Menu.run()

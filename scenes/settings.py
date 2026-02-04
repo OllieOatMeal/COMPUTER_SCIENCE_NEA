@@ -2,6 +2,7 @@ from tkinter import *
 from music import *
 from variables import *
 import pygame
+import json
 
 class settings_scene:
     def __init__(self, window, username):
@@ -24,7 +25,7 @@ class settings_scene:
         self.tracks_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.tracks_frame.place(relx=0.05, rely=0.35, anchor="w", width=1600, height=200)
 
-        username = self.username.get()
+        username = self.username
         if username != "admin":
             pass
         else:
@@ -111,6 +112,9 @@ class settings_scene:
             self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
     def create_main_menu(self):
+        data = json.dumps(({"stored_music": self.current_track.get()}), indent=4)
+        with open("database\loaded_user.json", "w") as login_file:
+            login_file.write(data)
         self.clear_settings_screen()
         from scenes.main_menu import main_menu
         Main_Menu = main_menu(self.window, self.username)
