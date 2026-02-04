@@ -1,14 +1,37 @@
+"""
+Leaderboard Scene Module
+Purpose: Displays game statistics and player rankings
+Shows user scores sorted by games played and account balance
+"""
+
 from tkinter import *
-import sqlite3
+from Utils.db import get_leaderboard
 from variables import *
 
 
 def comma_number(balance):
+    """
+    Format number with comma thousands separator
+    Args: balance (int) - number to format
+    Returns: str - formatted number string
+    """
     return "{:,}".format(balance)
 
 
 class leaderboard:
-    def __init__(self, window, username):
+    """
+    Leaderboard scene controller
+    Displays player rankings and game statistics
+    """
+
+    def __init__(self, window, username, protecting):
+        """
+        Initialise leaderboard scene
+        Args:
+            window: Tkinter root window
+            username: Current logged-in username
+            protecting: EncryptionService instance
+        """
         self.window = window
         self.username = username
         self.elements = {}
@@ -16,9 +39,15 @@ class leaderboard:
         self.frame_colour = frame_colour
         self.button_colour = button_colour
         self.font = font
-        self.db_path = database_path  # Your DB path
+        self.db_path = database_path
+        self.protecting = protecting
 
     def load_utils(self):
+        """
+        Load and create all UI elements for the leaderboard
+        Sets up background, scrollable frame, and database query results
+        """
+        # LOAD BACKGROUND IMAGE
         try:
             self.background = PhotoImage(file=main_background)
             bg_label = Label(self.window, image=self.background)
@@ -28,31 +57,32 @@ class leaderboard:
             print(f"Error loading background image: {e}")
             self.window.configure(bg='#1803A5')
 
-        # Main container frame
+        # CREATE MAIN CONTAINER FRAME
         frame = Frame(self.window, bg=self.frame_colour, bd=10, relief=RIDGE)
         frame.place(relx=0.5, rely=0.1, anchor="n", width=1000, height=900)
 
-        # Create a canvas and scrollbar inside the frame
+        # CREATE SCROLLABLE CANVAS AND SCROLLBAR
         canvas = Canvas(frame, bg=self.frame_colour, highlightthickness=0)
         scrollbar = Scrollbar(frame, orient=VERTICAL, command=canvas.yview)
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        # This frame will hold the leaderboard rows
+        # Create frame to hold leaderboard rows
         scrollable_frame = Frame(canvas, bg=self.frame_colour)
 
-        # Put the scrollable_frame inside the canvas
+        # Add scrollable frame to canvas
         canvas.create_window((0, 0), window=scrollable_frame, anchor='nw')
 
         # Pack canvas and scrollbar
         canvas.pack(side=LEFT, fill=BOTH, expand=True)
         scrollbar.pack(side=RIGHT, fill=Y)
 
-        # Make sure the scrollregion updates when the scrollable_frame size changes
+        # Update scroll region when content changes
         def on_configure(event):
             canvas.configure(scrollregion=canvas.bbox("all"))
 
         scrollable_frame.bind("<Configure>", on_configure)
 
+        # CREATE BACK BUTTON
         back_button = Button(
             self.window, text="Back", font=(self.font, 30, 'bold'), width=9,
             relief=RAISED, bd=10, bg=self.button_colour, activebackground=self.button_colour,
@@ -60,6 +90,7 @@ class leaderboard:
             command=self.back_to_main_menu
         )
 
+        # STORE ALL ELEMENTS
         self.elements = {
             "frame": frame,
             "canvas": canvas,
@@ -69,26 +100,27 @@ class leaderboard:
         }
 
     def create_leaderboard_screen(self):
+        """
+        Display leaderboard with sorted player data
+        Queries database and populates scrollable list with rankings
+        """
+        # PLACE BACK BUTTON
         self.elements["back_button"].place(relx=0.1, rely=0.9, anchor=CENTER)
         sf = self.elements["scrollable_frame"]
 
-        # Clear any previous rows
+        # CLEAR PREVIOUS ROWS
         for widget in sf.winfo_children():
             widget.destroy()
 
-        # Configure grid columns to expand evenly
+        # CONFIGURE GRID COLUMNS
         sf.grid_columnconfigure(0, weight=1)
         sf.grid_columnconfigure(1, weight=1)
         sf.grid_columnconfigure(2, weight=1)
 
-        # Connect to your database and fetch sorted leaderboard data
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT UserName, GamesPlayed, Money FROM Users ORDER BY GamesPlayed DESC")
-        rows = cursor.fetchall()
-        conn.close()
+        # QUERY DATABASE FOR LEADERBOARD DATA (centralised, decrypts usernames)
+        rows = get_leaderboard(self.protecting, order_by="GamesPlayed")
 
-        # Headers
+        # CREATE COLUMN HEADERS
         header_font = (self.font, 15, 'bold')
         Label(sf, text="Username", font=(header_font, 20, 'bold'), bg=self.frame_colour, fg='white', width=15,
               anchor='w') \
@@ -100,15 +132,21 @@ class leaderboard:
               anchor='e') \
             .grid(row=0, column=2, padx=10, pady=5, sticky='e')
 
+        # ALTERNATE ROW COLOURS FOR READABILITY
         row_bg_colors = ['#757575', '#ABABAB']
 
+        # POPULATE LEADERBOARD ROWS
         for i, (username, games_played, balance) in enumerate(rows, start=1):
             balance = comma_number(balance)
             bg_color = row_bg_colors[i % 2]
 
-            if username.strip().lower() == self.username.get().strip().lower():
-                bg_color = '#FFD700'  # Gold highlight
+            # HIGHLIGHT CURRENT USER IN GOLD
+            # Compare against provided username (StringVar or str)
+            current_user = self.username.get() if hasattr(self.username, 'get') else self.username
+            if username.strip().lower() == (current_user or "").strip().lower():
+                bg_color = '#FFD700'
 
+            # CREATE ROW LABELS
             Label(sf, text=username, font=(self.font, 16), bg=bg_color,
                   fg='black' if bg_color == '#FFD700' else 'white',
                   width=15, anchor='w').grid(row=i, column=0, padx=10, pady=2, sticky='w')
@@ -120,11 +158,13 @@ class leaderboard:
                   width=18, anchor='e').grid(row=i, column=2, padx=10, pady=2, sticky='e')
 
     def clear_screen(self):
+        """Remove all UI elements from the leaderboard screen"""
         for element in self.elements.values():
             element.place_forget()
         self.elements.clear()
 
     def back_to_main_menu(self):
+        """Return to main game screen"""
         self.clear_screen()
         from scenes.main_game import main_game
         MainGame = main_game(self.window, self.username)

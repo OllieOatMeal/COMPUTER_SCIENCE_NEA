@@ -1,20 +1,41 @@
+"""
+Settings Scene Module
+Purpose: Provides music volume control and track selection
+Allows users to adjust audio preferences and save them
+"""
+
 from tkinter import *
 from music import *
 from variables import *
 import pygame
+from Utils.json_handler import set_stored_music
 import json
 
+
 class settings_scene:
-    def __init__(self, window, username):
+    """
+    Settings scene controller
+    Manages music volume and track selection interface
+    """
+    def __init__(self, window, username, protecting):
+        """
+        Initialise settings scene
+        Args:
+            window: Tkinter root window
+            username: Current logged-in username
+            protecting: EncryptionService instance
+        """
         self.window = window
+        self.protecting = protecting
         self.elements = {}
         self.main_background = None
         self.username = username
         self.MUSIC_MUTED = False
         self.VOLUME = 50
-        self.current_track = 2  # Track number currently selected
+        self.current_track = None  # Track number currently selected
 
     def clear_settings_screen(self):
+        """Remove all UI elements from the settings screen"""
         for element in self.elements.values():
             element.place_forget()
 
@@ -96,14 +117,17 @@ class settings_scene:
         self.update_track_button_colors()
 
     def v_up(self):
+        """Increase music volume"""
         music.volume_up(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
     def v_dn(self):
+        """Decrease music volume"""
         music.volume_down(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
     def v_tog(self):
+        """Toggle music mute state"""
         music.toggle_music(self)
         print(self.MUSIC_MUTED)
         if self.MUSIC_MUTED == True:
@@ -112,12 +136,16 @@ class settings_scene:
             self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
     def create_main_menu(self):
-        data = json.dumps(({"stored_music": self.current_track.get()}), indent=4)
-        with open("database\loaded_user.json", "w") as login_file:
-            login_file.write(data)
+        """
+        Save current music track preference and return to main menu
+        Preserves all existing JSON data while updating music selection
+        """
+        # Save the selected track using the json handler (preserves other keys)
+        set_stored_music(self.current_track)
+        
         self.clear_settings_screen()
         from scenes.main_menu import main_menu
-        Main_Menu = main_menu(self.window, self.username)
+        Main_Menu = main_menu(self.window, self.username, self.protecting)
         Main_Menu.run()
 
     def run(self):

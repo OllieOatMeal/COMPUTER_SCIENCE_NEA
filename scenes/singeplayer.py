@@ -1,10 +1,18 @@
+"""
+Singleplayer Game Scene Module
+Purpose: Implements single-player card game functionality
+Manages game logic, card dealing, betting, and player interactions
+"""
+
 from tkinter import *
 import random as r
-import sqlite3
 from variables import *
+from Utils.db import increment_games_and_update_money, delete_user
+
 
 # Represents a single playing card
 class Card:
+    """Card class for game card representation"""
     def __init__(self, name, value, image_path):
         self.name = name
         self.value = value
@@ -77,10 +85,11 @@ class Deck:
 
 # Main singleplayer blackjack game class
 class singleplayer:
-    def __init__(self, window, username, balance):
+    def __init__(self, window, username, balance, protecting):
         self.window = window
         self.username = username
         self.balance = balance
+        self.protecting = protecting
         self.elements = {}         # Stores all UI elements
         self.background = None
         self.main_deck = None
@@ -89,6 +98,13 @@ class singleplayer:
         self.dealer_deck = []      # Dealer's hand
 
         self.user_val = 0
+        # Blackjack-specific state
+        self.bet = 10
+        self.split_mode = False
+        self.split_hands = []  # list of hands when split
+        self.current_hand_idx = 0
+        self.bets = []  # bet per hand
+        self.doubled = False
 
     def clear_screen(self):
         # Removes all widgets from the screen
@@ -125,34 +141,26 @@ class singleplayer:
             else:
                 self.elements[f"static_deck_{i}"] = Label(self.window, text="Back", bg="gray", width=10, height=5)
 
+        # Action buttons
+        self.elements["double_button"] = Button(self.window, text="Double", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='#ffffff', command=self.double_down)
+        self.elements["split_button"] = Button(self.window, text="Split", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='#ffffff', command=self.split_hand)
+
 
     def save_and_exit(self):
         # Saves balance and games played to the database, then returns to main menu
-        connection = sqlite3.connect(database_path)
-        cusor = connection.cursor()
-        cusor.execute(
-            "SELECT GamesPlayed FROM Users WHERE UserName = ?", (self.username.get(),)
-        )
-        games_played = cusor.fetchone()
-        games_played = games_played[0] if games_played else 0
-        games_played += 1
-        connection.close()
-        try:
-            connection = sqlite3.connect(database_path)
-            cursor = connection.cursor()
-            cursor.execute(
-                "UPDATE Users SET Money = ?, GamesPlayed = ? WHERE UserName = (?)",
-                (self.balance, games_played, self.username.get(),)
-            )
-            connection.commit()
-            connection.close()
-        except sqlite3.Error as e:
-            print(f"Database error while saving money: {e}")
-        finally:
-            from scenes.main_menu import main_menu
-            self.clear_screen()  # Clear current game UI
-            Main_Menu = main_menu(self.window, self.username)
-            Main_Menu.run()
+        # Determine actual username string (supports StringVar or plain str)
+        username_value = self.username.get() if hasattr(self.username, 'get') else self.username
+
+        # Persist new balance and increment games played via Utils.db
+        success = increment_games_and_update_money(username_value, self.balance, self.protecting)
+        if not success:
+            print("Database error while saving money/games played")
+
+        # Return to main menu
+        from scenes.main_menu import main_menu
+        self.clear_screen()  # Clear current game UI
+        Main_Menu = main_menu(self.window, username_value, self.protecting)
+        Main_Menu.run()
 
     def deal_cards(self):
         # Deals two cards each to player and dealer at the start of a round
@@ -182,22 +190,45 @@ class singleplayer:
                 self.elements[key].place_forget()
                 del self.elements[key]
 
+        # Calculate spacing so cards fit on screen
+        screen_width = self.window.winfo_screenwidth()
+        max_cards = max(len(self.user_deck), len(self.dealer_deck), 1)
+        spacing = max(40, min(120, (screen_width - 200) // (max_cards + 1)))
         start_card_x = 50
         start_count_x = 50
+        # Positioning for split or single hand
         y_player_card = 650
         y_dealer_card = 300
         y_player_count = 600
         y_dealer_count = 250
-        spacing = 80
 
-        # Player cards
-        for i, card in enumerate(self.user_deck, 1):
-            if card['image']:
-                lbl = Label(self.window, image=card['image'])
-            else:
-                lbl = Label(self.window, text=card['name'], bg="gray", width=8, height=5)
-            lbl.place(x=start_card_x + (i - 1) * spacing, y=y_player_card)
-            self.elements[f"card_slot_{i}"] = lbl
+        # Player cards (support split hands)
+        if self.split_mode:
+            # draw first hand on left side
+            for i, card in enumerate(self.split_hands[0], 1):
+                if card['image']:
+                    lbl = Label(self.window, image=card['image'])
+                else:
+                    lbl = Label(self.window, text=card['name'], bg="gray", width=8, height=5)
+                lbl.place(x=start_card_x + (i - 1) * spacing, y=y_player_card)
+                self.elements[f"card_slot_0_{i}"] = lbl
+            # draw second hand on right side (wider horizontal separation)
+            hand2_start_x = start_card_x + 450
+            for i, card in enumerate(self.split_hands[1], 1):
+                if card['image']:
+                    lbl = Label(self.window, image=card['image'])
+                else:
+                    lbl = Label(self.window, text=card['name'], bg="gray", width=8, height=5)
+                lbl.place(x=hand2_start_x + (i - 1) * spacing, y=y_player_card)
+                self.elements[f"card_slot_1_{i}"] = lbl
+        else:
+            for i, card in enumerate(self.user_deck, 1):
+                if card['image']:
+                    lbl = Label(self.window, image=card['image'])
+                else:
+                    lbl = Label(self.window, text=card['name'], bg="gray", width=8, height=5)
+                lbl.place(x=start_card_x + (i - 1) * spacing, y=y_player_card)
+                self.elements[f"card_slot_{i}"] = lbl
 
         # Dealer cards
         for i, card in enumerate(self.dealer_deck, 1):
@@ -212,10 +243,16 @@ class singleplayer:
             lbl.place(x=start_card_x + (i - 1) * spacing, y=y_dealer_card)
             self.elements[f"dealer_slot_{i}"] = lbl
 
-        # Player total label
-        player_total = self.get_hand_value(self.user_deck)
+        # Player total label (show for split or single)
+        if self.split_mode:
+            total1 = self.get_hand_value(self.split_hands[0])
+            total2 = self.get_hand_value(self.split_hands[1])
+            txt = f"Hand1: {total1}          Hand2: {total2}"
+        else:
+            total1 = self.get_hand_value(self.user_deck)
+            txt = f"Player Total: {total1}"
         self.elements["player_total_label"] = Label(
-            self.window, text=f"Player Total: {player_total}", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white'
+            self.window, text=txt, font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white'
         )
         self.elements["player_total_label"].place(x=(start_count_x), y=y_player_count)
 
@@ -238,21 +275,87 @@ class singleplayer:
             return
         card = self.main_deck.deal_card()
         if card:
-            self.user_deck.append(card)
-            self.update_ui()
-            if self.get_hand_value(self.user_deck) > 21:
-                self.end_game("Bust! Dealer wins.")
+            # operate on current hand (support split)
+            if self.split_mode:
+                self.split_hands[self.current_hand_idx].append(card)
+                self.update_ui()
+                if self.get_hand_value(self.split_hands[self.current_hand_idx]) > 21:
+                    # bust this hand
+                    self.elements.get("result_label") and self.elements["result_label"].destroy()
+                    self.elements["result_label"] = Label(self.window, text="Bust!", font=(font, 40, 'bold'), bg=button_colour, fg='white')
+                    self.elements["result_label"].place(x=700, y=75)
+                    # move to next hand or finish
+                    if self.current_hand_idx == 0:
+                        self.current_hand_idx = 1
+                    else:
+                        # both hands over -> dealer plays
+                        self.game_over = True
+                        self.dealer_play()
+            else:
+                self.user_deck.append(card)
+                self.update_ui()
+                if self.get_hand_value(self.user_deck) > 21:
+                    self.end_game("Bust! Dealer wins.")
 
     def stand(self):
         # Player stands, dealer draws until 17 or higher
         if self.game_over:
             return
+        if self.split_mode:
+            # finish current hand, move to next or finish
+            if self.current_hand_idx == 0:
+                self.current_hand_idx = 1
+                # continue playing second hand
+                return
+            else:
+                # both hands done -> dealer plays
+                self.game_over = True
+                self.dealer_play()
+                return
+
+        # non-split: dealer plays
         while self.get_hand_value(self.dealer_deck) < 17:
             card = self.main_deck.deal_card()
             if card:
                 self.dealer_deck.append(card)
         self.update_ui()
         self.check_winner()
+
+    def dealer_play(self):
+        # Dealer draws until 17
+        while self.get_hand_value(self.dealer_deck) < 17:
+            card = self.main_deck.deal_card()
+            if card:
+                self.dealer_deck.append(card)
+        self.update_ui()
+        # Settle hands
+        if self.split_mode:
+            # compare each split hand to dealer
+            results = []
+            dealer_val = self.get_hand_value(self.dealer_deck)
+            for idx, hand in enumerate(self.split_hands):
+                user_val = self.get_hand_value(hand)
+                bet = self.bets[idx]
+                if user_val > 21:
+                    # already busted
+                    self.balance -= 0  # already accounted
+                    results.append((idx, 'lose'))
+                elif dealer_val > 21 or user_val > dealer_val:
+                    self.balance += bet
+                    results.append((idx, 'win'))
+                elif user_val < dealer_val:
+                    self.balance -= bet
+                    results.append((idx, 'lose'))
+                else:
+                    results.append((idx, 'push'))
+            # display simple result
+            self.elements.get("result_label") and self.elements["result_label"].destroy()
+            res_text = ", ".join([f"Hand {i+1}:{r}" for i, r in results])
+            result = Label(self.window, text=res_text, font=(font, 30, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white')
+            result.place(x=500, y=75)
+            self.elements["result_label"] = result
+        else:
+            self.check_winner()
 
     def check_winner(self):
         # Determines the winner and ends the game
@@ -304,6 +407,12 @@ class singleplayer:
         self.dealer_deck = []
         self.main_deck.reset_deck()
         self.game_over = False
+        # reset split/double state
+        self.split_mode = False
+        self.split_hands = []
+        self.current_hand_idx = 0
+        self.bets = []
+        self.doubled = False
         self.deal_cards()
         self.update_ui()
 
@@ -339,26 +448,26 @@ class singleplayer:
 
     def check_bal(self):
         if self.balance <= 0:
+            # Determine actual username string
+            username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 
-            # Delete user
-            connection = sqlite3.connect(database_path)
-            cursor = connection.cursor()
-            cursor.execute(
-                "DELETE FROM Users WHERE UserName = ?", (self.username.get(),)
-            )
-            connection.commit()
-            connection.close()
+            # Delete user from database
 
-            # FULL window wipe (fixes your issue)
+            # Delete user via Utils.db
+            success = delete_user(username_value, self.protecting)
+            if not success:
+                print("Database error while deleting user")
+
+            # FULL window wipe
             for widget in self.window.winfo_children():
                 widget.destroy()
 
-            # Load main menu
+            # Load main menu and show logout/deleted flow
             from scenes.main_menu import main_menu
-            Main_Menu = main_menu(self.window, self.username)
+            Main_Menu = main_menu(self.window, username_value, self.protecting)
             Main_Menu.logout()
         else:
-            pass
+            return
 
     def create_screen(self):
         # Places static UI elements (buttons, labels, static deck)
@@ -369,6 +478,10 @@ class singleplayer:
             self.elements["hit_button"].place(x=900, y=1000)
         if "stand_button" in self.elements:
             self.elements["stand_button"].place(x=1000, y=1000)
+        if "double_button" in self.elements:
+            self.elements["double_button"].place(x=1150, y=1000)
+        if "split_button" in self.elements:
+            self.elements["split_button"].place(x=1250, y=1000)
         # Place static deck images vertically at left
         screenheight = self.window.winfo_screenheight()
         start_y = screenheight // 2 - 200
@@ -388,4 +501,63 @@ class singleplayer:
         self.dealer_deck = []
         self.game_over = False
         self.deal_cards()
+        self.update_ui()
+
+    def double_down(self):
+        # Double the bet for the current hand, draw one card, then stand
+        if self.split_mode:
+            hand = self.split_hands[self.current_hand_idx]
+            if len(hand) != 2:
+                return
+            # double current hand bet if possible
+            try:
+                if self.balance < self.bets[self.current_hand_idx]:
+                    return
+            except Exception:
+                return
+            self.bets[self.current_hand_idx] *= 2
+            # draw one card
+            card = self.main_deck.deal_card()
+            if card:
+                hand.append(card)
+                self.update_ui()
+            # after double, move to next hand or dealer
+            if self.current_hand_idx == 0:
+                self.current_hand_idx = 1
+            else:
+                self.game_over = True
+                self.dealer_play()
+        else:
+            if len(self.user_deck) != 2:
+                return
+            if self.balance < self.bet:
+                return
+            # double bet
+            self.bet *= 2
+            card = self.main_deck.deal_card()
+            if card:
+                self.user_deck.append(card)
+                self.update_ui()
+            # dealer plays
+            self.game_over = True
+            self.dealer_play()
+
+    def split_hand(self):
+        # Split the player's two-card hand into two hands if ranks match
+        if len(self.user_deck) != 2:
+            return
+        first_card = self.user_deck[0]['name'][0]
+        second_card = self.user_deck[1]['name'][0]
+        if first_card != second_card:
+            return
+        # ensure sufficient balance for second bet
+        if self.balance < self.bet:
+            return
+        # create two hands and place equal bets
+        self.split_mode = True
+        self.split_hands = [[self.user_deck[0]], [self.user_deck[1]]]
+        self.bets = [self.bet, self.bet]
+        # deduct second bet from balance
+        self.balance -= self.bet
+        self.current_hand_idx = 0
         self.update_ui()

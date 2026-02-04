@@ -1,12 +1,21 @@
+"""
+Multiplayer Game Scene Module
+Purpose: Placeholder for multiplayer game functionality
+Reserved for future implementation of networked game features
+"""
+
 from tkinter import *
 from variables import *
 
+
 class multiplayer:
-    def __init__(self, window, username, balance):
+    """Multiplayer game scene controller (currently under development)"""
+    def __init__(self, window, username, balance, protecting):
         self.window = window
         self.username = username
         self.balance = balance
         self.elements = {}
+        self.protecting = protecting
 
     def clear_screen(self):
         for element in self.elements.values():
@@ -42,7 +51,7 @@ class multiplayer:
     def back_to_main_menu(self):
         from scenes.main_menu import main_menu
         self.clear_screen()
-        main_meu = main_menu(self.window, self.username)
+        main_meu = main_menu(self.window, self.username, self.protecting)
         main_meu.run()
 
     def run(self):
