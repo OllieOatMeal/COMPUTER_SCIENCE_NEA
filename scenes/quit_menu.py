@@ -1,6 +1,7 @@
 import sys
 from tkinter import *
 from variables import *
+import json
 
 def tkquit():
     sys.exit()
@@ -68,6 +69,12 @@ class quit_menu:
         from scenes.main_menu import main_menu
         main = main_menu(self.window, self.username)
         main.run()
+    
+    def save_current_user(self):
+            data = json.dumps(({"logged_in_user": self.username.get()}), indent=4)
+            with open("database\loaded_user.json", "w") as login_file:
+                login_file.write(data)
 
     def run(self):
         self.load_utils()
+        self.save_current_user()

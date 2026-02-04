@@ -2,6 +2,7 @@ import sqlite3
 from tkinter import *
 from scenes.main_menu import *
 from variables import *
+import json
 
 # Define disallowed characters lists (adjust as needed)
 DISALLOWED_USERNAME_CHARS = [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '/', '\\', '|', '{', '}', '[', ']', ':', ';', '"', "'", '<', '>', ',', '.', '?', '`', '~']
@@ -133,7 +134,7 @@ class login:
         stored_password = result[0]
         if stored_password == self.password.get():
             self.clear_login_screen()
-            Main_Menu = main_menu(self.window, self.username)
+            Main_Menu = main_menu(self.window, self.username.get())
             Main_Menu.run()
         else:
             self.elements["message_label"].place(relx=0.5, rely=0.75, anchor=CENTER)
@@ -165,12 +166,27 @@ class login:
         self.clear_login_screen()
         Main_Menu = main_menu(self.window, self.username)
         Main_Menu.run()
+    
+    def check_pre_loaded_user(self):
+        with open ("database\loaded_user.json", "r") as login_file:
+            data = json.load(login_file)
+
+        if data["logged_in_user"] is not None:
+            self.username = data["logged_in_user"]
+            self.clear_login_screen()
+            Main_Menu = main_menu(self.window, self.username)
+            Main_Menu.run()
 
     def acc_deleted(self):
         self.run()
         self.elements["message_label"].place(relx=0.5, rely=0.75, anchor=CENTER)
         self.elements["message_label"].config(text=f"Your account was deleted")
 
+    def run_from_main_menu(self):
+        self.load_utils()
+        self.create_login_screen()
+
     def run(self):
         self.load_utils()
         self.create_login_screen()
+        self.check_pre_loaded_user()

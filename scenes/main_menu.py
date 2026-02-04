@@ -67,7 +67,7 @@ class main_menu:
         quote = get_random_quote()
         self.elements["quotes_label"] = Label(other_frame, text=quote, font=(font, 20, 'bold'),
                                               relief=RAISED, bd=10, bg=button_colour, fg='white', wraplength=1200)
-        self.elements["logged_in_user"] = Label(other_frame, text=f"Welcome, {self.username.get()}",
+        self.elements["logged_in_user"] = Label(other_frame, text=f"Welcome, {self.username}",
                                                 font=(font, 20, 'bold'), relief=RAISED, bd=10,
                                                 bg=button_colour, fg='white')
 
@@ -90,7 +90,7 @@ class main_menu:
         self.clear_main_menu()
         from scenes.login_scene import login
         login_scene = login(self.window)
-        login_scene.run()
+        login_scene.run_from_main_menu()
 
     def load_setting_scene(self):
         self.clear_main_menu()
