@@ -9,7 +9,8 @@ from scenes.quit_menu import quit_menu
 from scenes.credits import credits_scene
 from scenes.settings import settings_scene
 from scenes.main_game import main_game
-from variables import quotes_path, font, button_colour, frame_colour, main_background
+from Utils.db import get_is_admin
+from variables import quotes_path, font, button_colour, frame_colour, main_background, fall_back_colour
 
 
 def get_random_quote():
@@ -64,7 +65,7 @@ class main_menu:
             self.elements["background"] = bg
         except Exception as e:
             print(f"Error loading background: {e}")
-            self.window.configure(bg="#1803A5")
+            self.window.configure(bg=fall_back_colour)
 
         # CREATE FRAMES
         buttons_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
@@ -107,6 +108,13 @@ class main_menu:
                             font=(font, 20, 'bold'), relief=RAISED, bd=10,
                             bg=button_colour, fg='white')
 
+        # CREATE ADMIN BUTTON (only if user is admin)
+        if get_is_admin(username_value, self.protecting):
+            self.elements["admin_button"] = Button(self.window, text="Admin", width=9, font=(font, 40, 'bold'),
+                                                   relief=RAISED, bd=10, bg=button_colour, fg='white',
+                                                   activebackground=button_colour, activeforeground='white',
+                                                   command=self.load_admin_panel)
+
     def create_main_menu(self):
         """
         Position all UI elements on the main menu screen
@@ -122,6 +130,10 @@ class main_menu:
         # PLACE INFORMATION LABELS
         self.elements["quotes_label"].place(relx=0.025, rely=0.4)
         self.elements["logged_in_user"].place(relx=0.025, rely=0.1)
+
+        # PLACE ADMIN BUTTON (if exists)
+        if "admin_button" in self.elements:
+            self.elements["admin_button"].place(relx=0.9, rely=0.9, anchor=CENTER)
 
         # RAISE ALL ELEMENTS TO TOP
         for element in self.elements.values():
@@ -160,6 +172,13 @@ class main_menu:
         self.clear_main_menu()
         credits = credits_scene(self.window, self.username, self.protecting)
         credits.run()
+
+    def load_admin_panel(self):
+        """Load and display the admin panel (admin only)"""
+        self.clear_main_menu()
+        from scenes.admin_panel import admin_panel
+        panel = admin_panel(self.window, self.username, self.protecting)
+        panel.run()
 
     def run(self):
         """

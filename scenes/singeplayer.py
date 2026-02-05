@@ -5,8 +5,9 @@ Handles all the game logic, betting, dealing cards, etc.
 
 from tkinter import *
 import random as r
-from variables import path, card_path, font, button_colour, database_path
+from variables import path, card_path, font, button_colour, database_path, main_background, fall_back_colour
 from Utils.db import increment_games_and_update_money, delete_user
+from Utils.json_handler import save_json, LOADED_USER_PATH
 
 
 # A playing card with a name, value, and image
@@ -122,7 +123,7 @@ class singleplayer:
             bg_label.place(x=0, y=0, relwidth=1, relheight=1)
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg='#1803A5')  # fallback background color
+            self.window.configure(bg=fall_back_colour)  # fallback background color
 
         # Exit button
         self.elements["exit_button"] = Button(
@@ -451,20 +452,24 @@ class singleplayer:
             username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 
             # Delete user from database
-
-            # Delete user via Utils.db
             success = delete_user(username_value, self.protecting)
             if not success:
                 print("Database error while deleting user")
+
+            # Clear the loaded_user.json file
+            try:
+                save_json(LOADED_USER_PATH, {})
+            except Exception as e:
+                print(f"Error clearing loaded_user.json: {e}")
 
             # FULL window wipe
             for widget in self.window.winfo_children():
                 widget.destroy()
 
-            # Load main menu and show logout/deleted flow
-            from scenes.main_menu import main_menu
-            Main_Menu = main_menu(self.window, username_value, self.protecting)
-            Main_Menu.logout()
+                # Return to login screen with deleted account message
+            from scenes.login_scene import login
+            Login_Scene = login(self.window, self.protecting)
+            Login_Scene.acc_deleted()
         else:
             return
 

@@ -7,6 +7,7 @@ Sets up the window and starts the login scene
 from tkinter import *
 from scenes.login_scene import login
 from music import music
+from Utils.json_handler import get_stored_music, get_music_volume, get_music_muted
 from Utils.encryption_service import EncryptionService
 from variables import game_name, game_version, game_creator
 
@@ -41,6 +42,12 @@ class Main:
         
         # START MUSIC AND LOGIN SCREEN
         Music_Controller.run()
+
+        # Apply saved music state on startup (even without auto-login)
+        saved_track = get_stored_music()
+        if saved_track:
+            Music_Controller.change_track(saved_track)
+        Music_Controller.apply_saved_state(get_music_volume(), get_music_muted())
         Login_Scene.run()
 
         # DISPLAY CANVAS AND START MAIN LOOP

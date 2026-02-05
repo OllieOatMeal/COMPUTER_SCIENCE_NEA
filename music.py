@@ -70,6 +70,18 @@ class music:
         pygame.mixer.music.set_volume(0.5)
         self.MUSIC_MUTED = False
 
+    def apply_saved_state(self, volume: int | None, muted: bool | None) -> None:
+        """Apply saved volume/mute state to the mixer and controller."""
+        if volume is not None:
+            self.VOLUME = max(0, min(100, int(volume)))
+        if muted is not None:
+            self.MUSIC_MUTED = bool(muted)
+
+        if self.MUSIC_MUTED:
+            pygame.mixer.music.set_volume(0)
+        else:
+            pygame.mixer.music.set_volume(self.VOLUME / 100)
+
     def change_track(self, track_number):
         """
         Change to a different music track

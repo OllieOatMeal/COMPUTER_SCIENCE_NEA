@@ -66,7 +66,7 @@ def get_logged_in_user(protecting: Optional[object] = None) -> Optional[str]:
     return get_value(LOADED_USER_PATH, "logged_in_user", protecting=protecting, encrypted=True)
 
 
-def set_logged_in_user(username: str, protecting: Optional[object] = None, encrypt: bool = True) -> None:
+def set_logged_in_user(username: Optional[str], protecting: Optional[object] = None, encrypt: bool = True) -> None:
     set_value(LOADED_USER_PATH, "logged_in_user", username, protecting=protecting, encrypt=encrypt)
 
 
@@ -92,3 +92,61 @@ def set_stored_music(track: Optional[int]) -> None:
     except (TypeError, ValueError):
         # If track cannot be converted to int, store None instead
         set_value(LOADED_USER_PATH, "stored_music", None, encrypt=False)
+
+
+def get_music_volume() -> Optional[int]:
+    """Return stored music volume (0-100) or None if not set."""
+    val = get_value(LOADED_USER_PATH, "music_volume")
+    if val is None:
+        return None
+    try:
+        volume = int(val)
+        if volume < 0:
+            return 0
+        if volume > 100:
+            return 100
+        return volume
+    except (TypeError, ValueError):
+        return None
+
+
+def set_music_volume(volume: Optional[int]) -> None:
+    """Store music volume (0-100). Use None to clear."""
+    if volume is None:
+        set_value(LOADED_USER_PATH, "music_volume", None, encrypt=False)
+        return
+    try:
+        volume_int = int(volume)
+        if volume_int < 0:
+            volume_int = 0
+        if volume_int > 100:
+            volume_int = 100
+        set_value(LOADED_USER_PATH, "music_volume", volume_int, encrypt=False)
+    except (TypeError, ValueError):
+        set_value(LOADED_USER_PATH, "music_volume", None, encrypt=False)
+
+
+def get_music_muted() -> Optional[bool]:
+    """Return stored mute state or None if not set."""
+    val = get_value(LOADED_USER_PATH, "music_muted")
+    if val is None:
+        return None
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, str):
+        lowered = val.strip().lower()
+        if lowered in ["true", "1", "yes", "y"]:
+            return True
+        if lowered in ["false", "0", "no", "n"]:
+            return False
+    if isinstance(val, (int, float)):
+        return bool(val)
+    return None
+
+
+def set_music_muted(is_muted: Optional[bool]) -> None:
+    """Store music muted state. Use None to clear."""
+    if is_muted is None:
+        set_value(LOADED_USER_PATH, "music_muted", None, encrypt=False)
+        return
+    set_value(LOADED_USER_PATH, "music_muted", bool(is_muted), encrypt=False)

@@ -57,6 +57,27 @@ class EncryptionService:
 
         return encoded.decode('utf-8')
 
+    def encrypt_deterministic(self, plaintext):
+        """
+        Deterministic encryption without random salt (for lookup keys like usernames)
+        Args: plaintext (str)
+        Returns: str - Base64 encoded encrypted data
+        """
+        data = plaintext.encode('utf-8')
+        encrypted_bytes = self._xor_process(data)
+        encoded = base64.b64encode(encrypted_bytes)
+        return encoded.decode('utf-8')
+
+    def decrypt_deterministic(self, ciphertext):
+        """
+        Deterministic decryption for values encrypted without salt
+        Args: ciphertext (str) - Base64 encoded encrypted data
+        Returns: str - decrypted plaintext
+        """
+        encrypted_bytes = base64.b64decode(ciphertext)
+        decrypted_bytes = self._xor_process(encrypted_bytes)
+        return decrypted_bytes.decode('utf-8')
+
     def decrypt(self, ciphertext):
         """
         Decrypt Base64 encoded ciphertext

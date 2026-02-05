@@ -3,7 +3,7 @@ Shows the credits with who made the game
 """
 
 from tkinter import *
-from variables import frame_colour, button_colour, font, main_background
+from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
 
 class credits_scene:
@@ -53,7 +53,7 @@ class credits_scene:
         except (TclError, OSError) as e:
             print(f"Error loading images: {e}")
             print("Creating window with default background...")
-            background = Label(self.window, bg='#1803A5', bd=0)
+            background = Label(self.window, bg=fall_back_colour, bd=0)
             background.place(x=0, y=0, relwidth=1, relheight=1)
         else:
             # Create and place background only if image loaded successfully

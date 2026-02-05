@@ -4,9 +4,9 @@ Settings screen where users can change volume and pick music
 
 from tkinter import *
 from music import music
-from variables import frame_colour, button_colour, font, main_background
+from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 import pygame
-from Utils.json_handler import set_stored_music
+from Utils.json_handler import set_stored_music, get_music_volume, get_music_muted, set_music_volume, set_music_muted
 
 
 class settings_scene:
@@ -58,14 +58,29 @@ class settings_scene:
             self.main_background = PhotoImage(file=main_background)
         except (TclError, OSError) as e:
             print(f"Error loading images: {e}")
-            background = Label(self.window, bg='#1803A5', bd=0)
+            background = Label(self.window, bg=fall_back_colour, bd=0)
             background.place(x=0, y=0, relwidth=1, relheight=1)
         else:
             img_background = Label(self.window, image=self.main_background, bd=0)
             img_background.place(x=0, y=0)
             img_background.lower()
         back_button = Button(self.window, text="Back", width=10, font=(font, 40, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', command=self.create_main_menu)
-        volume_info_label = Label(self.volume_frame, text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 2)) + "%", font=(font, 40, 'bold'), fg='#ffffff', bg=button_colour, relief=RAISED, bd=10)
+        # Load saved music state (if any)
+        stored_volume = get_music_volume()
+        stored_muted = get_music_muted()
+        if stored_volume is not None:
+            self.VOLUME = stored_volume
+            pygame.mixer.music.set_volume(self.VOLUME / 100)
+        else:
+            self.VOLUME = int(round(pygame.mixer.music.get_volume() * 100, 0))
+
+        if stored_muted is not None:
+            self.MUSIC_MUTED = stored_muted
+            if self.MUSIC_MUTED:
+                pygame.mixer.music.set_volume(0)
+
+        volume_text = "MUSIC MUTED" if self.MUSIC_MUTED else f"Volume: {round(pygame.mixer.music.get_volume() * 100, 0)}%"
+        volume_info_label = Label(self.volume_frame, text=volume_text, font=(font, 40, 'bold'), fg='#ffffff', bg=button_colour, relief=RAISED, bd=10)
         volumehigher = Button(self.volume_frame, text='Louder', font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', command=self.v_up)
         volumelower = Button(self.volume_frame, text='Quieter', font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', command=self.v_dn)
         mute_music_button = Button(self.volume_frame, text="Mute Music", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', command=self.v_tog)
@@ -114,11 +129,13 @@ class settings_scene:
         """Increase music volume"""
         music.volume_up(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
+        self.MUSIC_MUTED = False
 
     def v_dn(self):
         """Decrease music volume"""
         music.volume_down(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
+        self.MUSIC_MUTED = False
 
     def v_tog(self):
         """Toggle music mute state"""
@@ -134,8 +151,10 @@ class settings_scene:
         Save current music track preference and return to main menu
         Preserves all existing JSON data while updating music selection
         """
-        # Save the selected track using the json handler (preserves other keys)
+        # Save music state using the json handler (preserves other keys)
         set_stored_music(self.current_track)
+        set_music_volume(self.VOLUME)
+        set_music_muted(self.MUSIC_MUTED)
         
         self.clear_settings_screen()
         from scenes.main_menu import main_menu

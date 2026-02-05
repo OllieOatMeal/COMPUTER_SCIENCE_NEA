@@ -3,13 +3,13 @@ Login and signup screen
 Lets users create an account or login to an existing one
 """
 
-from Utils.db import get_user_password, user_exists, create_user
+from Utils.db import get_user_password, user_exists, create_user, update_last_login
 from tkinter import *
 import sys
 from scenes.main_menu import main_menu
-from variables import font, button_colour, frame_colour, main_background
+from variables import font, button_colour, frame_colour, main_background, fall_back_colour
 from music import music
-from Utils.json_handler import get_logged_in_user, get_stored_music
+from Utils.json_handler import get_logged_in_user, get_stored_music, get_music_volume, get_music_muted, set_logged_in_user
 
 # Input validation constants
 DISALLOWED_USERNAME_CHARS = [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '/', '\\', '|', '{', '}', '[', ']', ':', ';', '"', "'", '<', '>', ',', '.', '?', '`', '~']
@@ -65,7 +65,7 @@ class login:
         except (TclError, OSError) as e:
             print(f"Error loading images: {e}")
             print("Creating window with default background...")
-            background = Label(self.window, bg='#FF03A5', bd=0)
+            background = Label(self.window, bg=fall_back_colour, bd=0)
             background.place(x=0, y=0, relwidth=1, relheight=1)
         else:
             self.img_background = Label(self.window, image=self.main_background, bd=0)
@@ -191,6 +191,7 @@ class login:
 
         # VERIFY PASSWORD
         if stored_password == self.password.get():
+            update_last_login(username_value, self.protecting)
             self.clear_login_screen()
             Main_Menu = main_menu(self.window, self.username, self.protecting)
             Main_Menu.run()
@@ -235,6 +236,9 @@ class login:
         data_username = get_logged_in_user(self.protecting)
 
         if data_username is not None:
+            if not user_exists(data_username, self.protecting):
+                set_logged_in_user(None, protecting=self.protecting, encrypt=False)
+                return
             # Ensure we set the StringVar if present
             if hasattr(self.username, 'set'):
                 self.username.set(data_username)
@@ -244,6 +248,9 @@ class login:
             user_music = get_stored_music() or 2
             if self.music_controller:
                 self.music_controller.change_track(user_music)
+                saved_volume = get_music_volume()
+                saved_muted = get_music_muted()
+                self.music_controller.apply_saved_state(saved_volume, saved_muted)
 
             self.clear_login_screen()
             Main_Menu = main_menu(self.window, self.username, self.protecting)

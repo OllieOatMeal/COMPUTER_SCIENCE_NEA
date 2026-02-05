@@ -3,7 +3,7 @@ Placeholder for multiplayer game (coming soon)
 """
 
 from tkinter import *
-from variables import frame_colour, button_colour, font, main_background
+from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
 
 class multiplayer:
@@ -25,7 +25,7 @@ class multiplayer:
         except (TclError, OSError) as e:
             print(f"Error loading images: {e}")
             print("Creating window with default background...")
-            background = Label(self.window, bg='#FF03A5', bd=0)
+            background = Label(self.window, bg=fall_back_colour, bd=0)
             background.place(x=0, y=0, relwidth=1, relheight=1)
             background.lower()
         else:

@@ -6,7 +6,7 @@ from tkinter import *
 from scenes.singeplayer import singleplayer
 from scenes.multiplayer import multiplayer
 from Utils.db import get_money
-from variables import frame_colour, button_colour, font, main_background
+from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
 
 class main_game:
@@ -48,7 +48,7 @@ class main_game:
             bg_label.lower()
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg='#1803A5')  # fallback background color
+            self.window.configure(bg=fall_back_colour)  # fallback background color
         # Determine actual username string (supports StringVar or plain str)
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 

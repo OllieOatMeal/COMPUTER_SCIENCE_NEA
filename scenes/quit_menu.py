@@ -5,7 +5,7 @@ Saves your info before closing
 
 import sys
 from tkinter import *
-from variables import frame_colour, button_colour, font, main_background
+from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 from Utils.json_handler import set_logged_in_user
 
 
@@ -66,7 +66,7 @@ class quit_menu:
             self.elements["background"] = bg
         except Exception as e:
             print("Error loading background:", e)
-            self.window.configure(bg='#1803A5')
+            self.window.configure(bg=fall_back_colour)
 
         # CREATE CENTER FRAME
         frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)

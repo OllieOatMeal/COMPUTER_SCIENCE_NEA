@@ -4,7 +4,7 @@ Shows the leaderboard with all players ranked by games played and money
 
 from tkinter import *
 from Utils.db import get_leaderboard
-from variables import frame_colour, button_colour, font, database_path, main_background
+from variables import frame_colour, button_colour, font, database_path, main_background, fall_back_colour
 
 
 def comma_number(balance):
@@ -49,7 +49,7 @@ class leaderboard:
             self.elements["background_label"] = bg_label
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg='#1803A5')
+            self.window.configure(bg=fall_back_colour)
 
         # CREATE MAIN CONTAINER FRAME
         frame = Frame(self.window, bg=self.frame_colour, bd=10, relief=RIDGE)
@@ -112,7 +112,7 @@ class leaderboard:
         sf.grid_columnconfigure(2, weight=1)
 
         # QUERY DATABASE FOR LEADERBOARD DATA (centralised, decrypts usernames)
-        rows = get_leaderboard(self.protecting, order_by="GamesPlayed")
+        rows = get_leaderboard(self.protecting, order_by="Money")
 
         # CREATE COLUMN HEADERS
         header_font = (self.font, 15, 'bold')
@@ -130,7 +130,7 @@ class leaderboard:
         row_bg_colors = ['#757575', '#ABABAB']
 
         # POPULATE LEADERBOARD ROWS
-        for i, (username, games_played, balance) in enumerate(rows, start=1):
+        for i, (username, balance, games_played) in enumerate(rows, start=1):
             balance = comma_number(balance)
             bg_color = row_bg_colors[i % 2]
 
@@ -161,7 +161,7 @@ class leaderboard:
         """Return to main game screen"""
         self.clear_screen()
         from scenes.main_game import main_game
-        MainGame = main_game(self.window, self.username)
+        MainGame = main_game(self.window, self.username, self.protecting)
         MainGame.run()
 
     def run(self):
