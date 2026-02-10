@@ -1,7 +1,3 @@
-"""
-Screen to pick which game you want to play - singleplayer or multiplayer
-"""
-
 from tkinter import *
 from scenes.singeplayer import singleplayer
 from scenes.multiplayer import multiplayer
@@ -10,17 +6,7 @@ from variables import frame_colour, button_colour, font, main_background, fall_b
 
 
 class main_game:
-    """Game mode selection screen"""
-
     def __init__(self, window, username, protecting):
-        """
-        Initialise main game scene
-        Args:
-            window: Tkinter root window
-            username: Current logged-in username
-            protecting: EncryptionService instance
-        """
-        # Keep state for game mode selection
         self.window = window
         self.username = username
         self.elements = {}
@@ -30,19 +16,12 @@ class main_game:
         self.protecting = protecting
 
     def load_utils(self):
-        """
-        Load and create all UI elements for the game mode selection screen
-        Sets up background and game mode frame
-        """
-        # Build the UI and pull current balance
-        # CREATE GAMEMODE FRAME
         self.gamemode_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.gamemode_frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=1600, height=500)
         self.elements.update({
             "gamemode_frame": self.gamemode_frame,
         })
 
-        # LOAD BACKGROUND IMAGE
         try:
             self.background = PhotoImage(file=main_background)
             bg_label = Label(self.window, image=self.background)
@@ -50,18 +29,15 @@ class main_game:
             bg_label.lower()
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg=fall_back_colour)  # fallback background color
-        # Determine actual username string (supports StringVar or plain str)
+            self.window.configure(bg=fall_back_colour)
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 
-        # QUERY DATABASE FOR PLAYER BALANCE (centralised in Utils.db)
         try:
             self.balance = get_money(username_value, self.protecting)
         except Exception as e:
             print(f"Error loading balance from DB: {e}")
             self.balance = 0
 
-        # CREATE BACK BUTTON
         self.elements['back_button'] = Button(
             self.window, text="Back", command=self.back_to_main_menu, width=10,
             font=(font, 40, 'bold'), relief=RAISED, bd=10,
@@ -69,7 +45,6 @@ class main_game:
             activebackground=button_colour, activeforeground='#ffffff'
         )
         
-        # CREATE GAME MODE BUTTONS
         self.elements['play_button'] = Button(
             self.gamemode_frame, text=f"Play (Balance: ${self.balance})", width=40,
             font=(font, 40, 'bold'), relief=RAISED, bd=10,
@@ -105,15 +80,11 @@ class main_game:
         )
 
     def clear_screen(self):
-        """Remove all UI elements from the game screen"""
-        # Clear widgets before moving to another scene
         for widget in self.window.winfo_children():
             widget.place_forget()
         self.elements.clear()
 
     def back_to_main_menu(self):
-        """Return to main menu"""
-        # Return to the menu scene
         self.clear_screen()
         from scenes.main_menu import main_menu
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -121,8 +92,6 @@ class main_game:
         MainMenu.run()
 
     def place_elements(self):
-        """Position all UI elements on the game mode selection screen"""
-        # Place buttons and labels on screen
         self.elements['back_button'].place(relx=0.05, rely=0.9, anchor="w")
         self.elements['play_label'].place(relx=0.5, rely=0.5, anchor=CENTER)
         self.elements["single_player_button"].place(relx=0.25, rely=0.2, anchor=CENTER)
@@ -130,8 +99,6 @@ class main_game:
         self.elements["leaderboard_button"].place(relx=0.5, rely=0.8, anchor=CENTER)
 
     def load_leaderboard(self):
-        """Load and display the leaderboard scene"""
-        # Switch to the leaderboard scene
         self.clear_screen()
         from scenes.leaderboard import leaderboard
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -139,11 +106,6 @@ class main_game:
         LeaderBoard.run()
 
     def singleplayer(self):
-        """
-        Select singleplayer game mode
-        Highlights singleplayer button and displays play button
-        """
-        # Set mode and update button colors
         if self.gamemode != "singleplayer":
             self.gamemode = "singleplayer"
             self.elements["play_label"].place_forget()
@@ -152,7 +114,6 @@ class main_game:
             self.elements["multi_player_button"].config(bg=button_colour, activebackground=button_colour)
 
     def multiplayer(self):
-        # Set mode and update button colors
         if self.gamemode != "multiplayer":
             self.gamemode = "multiplayer"
             self.elements["play_label"].place_forget()
@@ -161,7 +122,6 @@ class main_game:
             self.elements["single_player_button"].config(bg=button_colour, activebackground=button_colour)
 
     def start_game(self):
-        # Launch the selected game mode
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
         if self.gamemode == "singleplayer":
             self.clear_screen()
@@ -175,7 +135,6 @@ class main_game:
             print("Error: Not starting game")
 
     def run(self):
-        # Build and show the mode selection screen
         self.clear_screen()
         self.load_utils()
         self.place_elements()

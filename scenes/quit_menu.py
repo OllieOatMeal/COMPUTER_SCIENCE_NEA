@@ -1,8 +1,3 @@
-"""
-Screen that asks if you want to quit
-Saves your info before closing
-"""
-
 import sys
 from tkinter import *
 from variables import frame_colour, button_colour, font, main_background, fall_back_colour
@@ -10,30 +5,14 @@ from Utils.json_handler import set_logged_in_user
 
 
 def tkquit():
-    """Close the game"""
-    # Just exit the app immediately
     sys.exit()
 
 
 class quit_menu:
-    """Quit confirmation screen"""
-    
     def old_init(self):
-        """
-    Quit menu scene controller
-    Displays confirmation dialog and handles user session data
-    """
-        # Old stub left here for reference
+        pass
 
     def __init__(self, window, username, protecting):
-        """
-        Initialise quit menu
-        Args:
-            window: Tkinter root window
-            username: Current logged-in username
-            protecting: EncryptionService instance
-        """
-        # Keep state for the quit flow
         self.window = window
         self.username = username
         self.protecting = protecting
@@ -41,14 +20,9 @@ class quit_menu:
         self.main_background = None
 
     def clear_quit_screen(self):
-        """
-        Remove all UI elements from the quit screen
-        Attempts to destroy widgets and fallback to place_forget
-        """
-        # Clean up widgets before leaving
         for element in self.elements.values():
             try:
-                element.destroy()  # Fully remove the widget
+                element.destroy()
             except:
                 try:
                     element.place_forget()
@@ -57,12 +31,6 @@ class quit_menu:
         self.elements.clear()
 
     def load_utils(self):
-        """
-        Load and create all UI elements for the quit confirmation dialog
-        Sets up background, frame, labels, and buttons
-        """
-        # Build the quit confirmation UI
-        # LOAD BACKGROUND
         try:
             self.main_background = PhotoImage(file=main_background)
             bg = Label(self.window, image=self.main_background)
@@ -73,19 +41,16 @@ class quit_menu:
             print("Error loading background:", e)
             self.window.configure(bg=fall_back_colour)
 
-        # CREATE CENTER FRAME
         frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=700, height=400)
         self.elements["frame"] = frame
 
-        # CREATE CONFIRMATION LABEL
         label = Label(frame, text="Are you sure you want to quit?",
                       font=(font, 25, 'bold'), bg=button_colour, fg="white", bd=10, relief=RIDGE,
                       wraplength=600, justify="center")
         label.place(relx=0.5, rely=0.25, anchor=CENTER)
         self.elements["label"] = label
 
-        # CREATE NO BUTTON
         btn_no = Button(frame, text="NO", width=10, font=(font, 30, 'bold'),
                         bg=button_colour, fg="white", bd=10, relief=RIDGE,
                         activebackground=button_colour, activeforeground="white",
@@ -93,7 +58,6 @@ class quit_menu:
         btn_no.place(relx=0.5, rely=0.55, anchor=CENTER)
         self.elements["btn_no"] = btn_no
 
-        # CREATE YES BUTTON
         btn_yes = Button(frame, text="YES", width=10, font=(font, 30, 'bold'),
                          bg=button_colour, fg="white", bd=10, relief=RIDGE,
                          activebackground=button_colour, activeforeground="white",
@@ -102,30 +66,16 @@ class quit_menu:
         self.elements["btn_yes"] = btn_yes
 
     def quit_unconfirm(self):
-        """Cancel quit operation and return to main menu"""
-        # Go back without quitting
         self.clear_quit_screen()
         from scenes.main_menu import main_menu
         main = main_menu(self.window, self.username, self.protecting)
         main.run()
 
     def save_current_user(self):
-        """
-        Save current user session data to JSON file
-        Encrypts username and preserves all existing JSON data
-        """
-        # Save the logged-in user to disk
-        # Safely extract raw username string
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 
-        # Use json handler which will encrypt the value when requested
         set_logged_in_user(username_value, protecting=self.protecting, encrypt=True)
 
     def run(self):
-        """
-        Main entry point for quit menu scene
-        Loads UI and saves user session before showing confirmation
-        """
-        # Save session and show confirmation
         self.load_utils()
         self.save_current_user()

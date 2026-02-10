@@ -1,7 +1,3 @@
-"""
-Settings screen where users can change volume and pick music
-"""
-
 from tkinter import *
 from music import music
 from variables import frame_colour, button_colour, font, main_background, fall_back_colour
@@ -10,16 +6,7 @@ from Utils.json_handler import set_stored_music, get_music_volume, get_music_mut
 
 
 class settings_scene:
-    """Settings screen for audio preferences"""
     def __init__(self, window, username, protecting):
-        """
-        Initialise settings scene
-        Args:
-            window: Tkinter root window
-            username: Current logged-in username
-            protecting: EncryptionService instance
-        """
-        # Keep settings state for this session
         self.window = window
         self.protecting = protecting
         self.elements = {}
@@ -27,16 +14,13 @@ class settings_scene:
         self.username = username
         self.MUSIC_MUTED = False
         self.VOLUME = 50
-        self.current_track = None  # Track number currently selected
+        self.current_track = None
 
     def clear_settings_screen(self):
-        """Remove all UI elements from the settings screen"""
-        # Clear widgets before switching scenes
         for element in self.elements.values():
             element.place_forget()
 
     def load_utils(self):
-        # Build frames, load background, and read saved audio state
         self.volume_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.volume_frame.place(relx=0.05, rely=0.15, anchor="w", width=1600, height=200)
 
@@ -68,7 +52,6 @@ class settings_scene:
             img_background.place(x=0, y=0)
             img_background.lower()
         back_button = Button(self.window, text="Back", width=10, font=(font, 40, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', command=self.create_main_menu)
-        # Load saved music state (if any)
         stored_volume = get_music_volume()
         stored_muted = get_music_muted()
         if stored_volume is not None:
@@ -99,25 +82,21 @@ class settings_scene:
         }
         )
 
-        # Track selection buttons
         for i in range(1, 9):
             track_button = Button(self.tracks_frame, text=f"# {i}", font=(font, 15, 'bold'), bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', relief=RAISED, bd=5, command=lambda i=i: self.change_track_with_highlight(i))
             self.elements[f"track_button_{i}"] = track_button
 
     def create_settings_menu(self):
-        # Place volume and track controls
         self.elements["back_button"].place(x=100, y=900)
         self.elements["volume_higher_button"].place(relx=0.25, rely=0.5, anchor=CENTER)
         self.elements["volume_lower_button"].place(relx=0.4, rely=0.5, anchor=CENTER)
         self.elements["volume_info_label"].place(relx=0.7, rely=0.5, anchor=CENTER)
         self.elements["mute_music_button"].place(relx=0.1, rely=0.5, anchor=CENTER)
 
-        # Place track buttons
         for i in range(1, 9):
             self.elements[f"track_button_{i}"].place(relx=0.025 + (i*0.1), rely=0.5, anchor="w")
 
     def update_track_button_colors(self):
-        # Highlight the currently selected track
         for i in range(1, 9):
             button = self.elements[f"track_button_{i}"]
             if i == self.current_track:
@@ -126,28 +105,21 @@ class settings_scene:
                 button.config(bg=button_colour, activebackground=button_colour)
 
     def change_track_with_highlight(self, track_number):
-        # Switch track and update the button highlight
         self.current_track = track_number
         music.change_track(self, track_number)
         self.update_track_button_colors()
 
     def v_up(self):
-        """Increase music volume"""
-        # Raise volume and update label
         music.volume_up(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
         self.MUSIC_MUTED = False
 
     def v_dn(self):
-        """Decrease music volume"""
-        # Lower volume and update label
         music.volume_down(self)
         self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
         self.MUSIC_MUTED = False
 
     def v_tog(self):
-        """Toggle music mute state"""
-        # Toggle mute and update label
         music.toggle_music(self)
         print(self.MUSIC_MUTED)
         if self.MUSIC_MUTED == True:
@@ -156,12 +128,6 @@ class settings_scene:
             self.elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
     def create_main_menu(self):
-        """
-        Save current music track preference and return to main menu
-        Preserves all existing JSON data while updating music selection
-        """
-        # Save settings then return to menu
-        # Save music state using the json handler (preserves other keys)
         set_stored_music(self.current_track)
         set_music_volume(self.VOLUME)
         set_music_muted(self.MUSIC_MUTED)
@@ -172,7 +138,6 @@ class settings_scene:
         Main_Menu.run()
 
     def run(self):
-        # Build and show the settings screen
         self.load_utils()
         self.create_settings_menu()
         self.update_track_button_colors()
