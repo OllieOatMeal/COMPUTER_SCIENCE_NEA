@@ -1,6 +1,6 @@
 """
 Singleplayer blackjack game
-Handles all the game logic, betting, dealing cards, etc.
+Handles all the game logic, betting, dealing cards
 """
 
 from tkinter import *
@@ -93,7 +93,6 @@ class Deck:
 # Main singleplayer blackjack game class
 class singleplayer:
     def __init__(self, window, username, balance, protecting):
-        # Just keep game state for this session
         self.window = window
         self.username = username
         self.balance = balance
@@ -106,7 +105,6 @@ class singleplayer:
         self.dealer_deck = []      # Dealer's hand
 
         self.user_val = 0
-        # Blackjack-specific state
         self.bet = 10
         self.split_mode = False
         self.split_hands = []  # list of hands when split
@@ -115,8 +113,7 @@ class singleplayer:
         self.doubled = False
 
     def clear_screen(self):
-        # Just hide all current widgets
-        # Removes all widgets from the screen
+        # Remove all current UI elements from the screen
         for element in self.elements.values():
             try:
                 if element.winfo_exists():
@@ -125,7 +122,6 @@ class singleplayer:
                 print(f"Widget removal error: {e}")
 
     def load_utils(self):
-        # Just build static UI and background
         # Loads background and static UI elements
         try:
             self.background = PhotoImage(file=main_background)
