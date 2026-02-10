@@ -121,7 +121,6 @@ class settings_scene:
 
     def v_tog(self):
         music.toggle_music(self)
-        print(self.MUSIC_MUTED)
         if self.MUSIC_MUTED == True:
             self.elements["volume_info_label"].config(text="MUSIC MUTED")
         else:
