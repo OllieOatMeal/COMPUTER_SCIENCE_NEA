@@ -25,8 +25,6 @@ class Card:
             self.image = None
 
     def to_dict(self):
-        # Just return a quick dict version of the card
-        # Returns card info as a dictionary
         return {
             "name": self.name,
             "value": self.value,

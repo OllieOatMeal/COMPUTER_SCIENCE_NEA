@@ -1,20 +1,7 @@
-"""
-Simple admin tool.
-
-Commands:
-  python "Admin Utils/admin_tool.py" set-admin <username> [true|false]
-  python "Admin Utils/admin_tool.py" decrypt-user <user_id>
-  python "Admin Utils/admin_tool.py" set-password <username> <new_password>
-    python "Admin Utils/admin_tool.py" create-user <username> <password> [balance] [games] [is_admin]
-  python "Admin Utils/admin_tool.py" set-balance <username> <amount>
-    python "Admin Utils/admin_tool.py" delete-user <username>
-  python "Admin Utils/admin_tool.py" list-users
-"""
 import os
 import sys
 import sqlite3
 
-# Add parent directory so imports work
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from variables import database_path
@@ -31,14 +18,12 @@ from Utils.db import (
 
 
 def get_protecting():
-    # Just create the encryption service with the loaded key
     protecting = EncryptionService()
     protecting.get_key()
     return protecting
 
 
 def decrypt_username(value, protecting):
-    # Try deterministic decrypt first, then fall back
     if value is None:
         return ""
     raw = str(value)
@@ -52,7 +37,6 @@ def decrypt_username(value, protecting):
 
 
 def decrypt_user_by_id(user_id):
-    # Print a full decrypted user record by UserID
     try:
         protecting = get_protecting()
         conn = sqlite3.connect(database_path)
@@ -106,7 +90,6 @@ def decrypt_user_by_id(user_id):
 
 
 def set_admin(username, flag):
-    # Just toggle admin status for a user
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -122,7 +105,6 @@ def set_admin(username, flag):
 
 
 def set_password(username, new_password):
-    # Just update a user's password
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -138,7 +120,6 @@ def set_password(username, new_password):
 
 
 def set_balance(username, amount):
-    # Just update a user's balance
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -154,7 +135,6 @@ def set_balance(username, amount):
 
 
 def add_user(username, password, balance, games, is_admin):
-    # Just create a new user with starting values
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -170,7 +150,6 @@ def add_user(username, password, balance, games, is_admin):
 
 
 def remove_user(username):
-    # Just delete a user record
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -186,7 +165,6 @@ def remove_user(username):
 
 
 def list_users():
-    # Just list all users with admin status and balance
     try:
         protecting = get_protecting()
     except Exception as e:
@@ -213,7 +191,6 @@ def list_users():
 
 
 def main():
-    # Entry point for CLI mode
     if len(sys.argv) < 2:
         return run_menu()
 
@@ -301,8 +278,6 @@ def main():
 
 
 def run_menu():
-    """Simple text menu for choosing actions without typing full commands."""
-    # Lightweight interactive menu for admin actions
     print("\nAdmin Tool Menu")
     print("1) List users")
     print("2) Create user")
