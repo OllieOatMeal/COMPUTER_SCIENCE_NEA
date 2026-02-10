@@ -31,7 +31,7 @@ class Main:
         saved_track = get_stored_music()
         if saved_track:
             Music_Controller.change_track(saved_track)
-        Music_Controller.apply_saved_stateget_music_volume(), get_music_muted()
+        Music_Controller.apply_saved_state, get_music_volume(), get_music_muted()
         Login_Scene.run()
 
         self.canvas.place(x=0, y=0)
