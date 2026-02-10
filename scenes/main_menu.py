@@ -18,6 +18,7 @@ def get_random_quote():
     Retrieve a random quote from the quotes file
     Returns: str - randomly selected quote
     """
+    # Just pick a random quote for the menu
     with open(quotes_path) as f:
         lines = f.readlines()
     return random.choice(lines).strip()
@@ -36,6 +37,7 @@ class main_menu:
             username: Current logged-in username
             protecting: EncryptionService instance
         """
+        # Keep menu state
         self.window = window
         self.username = username
         self.elements = {}
@@ -47,6 +49,7 @@ class main_menu:
         Remove all UI elements from the main menu
         Clears the elements dictionary for next scene
         """
+        # Hide menu widgets so we can swap scenes
         for element in self.elements.values():
             element.place_forget()
         self.elements.clear()
@@ -56,6 +59,7 @@ class main_menu:
         Load and create all UI elements for the main menu
         Sets up background, frames, buttons, and labels
         """
+        # Build menu layout and buttons
         # LOAD BACKGROUND IMAGE
         try:
             self.main_background = PhotoImage(file=main_background)
@@ -120,6 +124,7 @@ class main_menu:
         Position all UI elements on the main menu screen
         Places buttons and labels in their designated positions
         """
+        # Place buttons and labels on screen
         # PLACE NAVIGATION BUTTONS
         self.elements["play_button"].place(relx=0.1, rely=0.05)
         self.elements["settings_button"].place(relx=0.1, rely=0.3)
@@ -144,6 +149,7 @@ class main_menu:
         Log out current user and return to login screen
         Clears menu and loads login scene without pre-loaded user check
         """
+        # Return to login without auto-login
         self.clear_main_menu()
         from scenes.login_scene import login
         login_scene = login(self.window, self.protecting)
@@ -151,30 +157,35 @@ class main_menu:
 
     def load_setting_scene(self):
         """Load and display the settings scene"""
+        # Switch to settings
         self.clear_main_menu()
         setting_scene = settings_scene(self.window, self.username, self.protecting)
         setting_scene.run()
 
     def load_game(self):
         """Load and display the main game scene"""
+        # Switch to game mode selection
         self.clear_main_menu()
         game_scene = main_game(self.window, self.username, self.protecting)
         game_scene.run()
 
     def load_quit_menu(self):
         """Load and display the quit confirmation menu"""
+        # Switch to quit confirmation
         self.clear_main_menu()
         quit_scene = quit_menu(self.window, self.username, self.protecting)
         quit_scene.run()
 
     def load_credits_scene(self):
         """Load and display the credits scene"""
+        # Switch to credits
         self.clear_main_menu()
         credits = credits_scene(self.window, self.username, self.protecting)
         credits.run()
 
     def load_admin_panel(self):
         """Load and display the admin panel (admin only)"""
+        # Switch to admin tools
         self.clear_main_menu()
         from scenes.admin_panel import admin_panel
         panel = admin_panel(self.window, self.username, self.protecting)
@@ -185,5 +196,6 @@ class main_menu:
         Main entry point for main menu scene
         Loads UI elements and displays menu
         """
+        # Build and show menu
         self.load_utils()
         self.create_main_menu()

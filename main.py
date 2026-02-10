@@ -17,11 +17,13 @@ class Main:
 
     def __init__(self):
         """Set up the main window"""
+        # Just keeping window and canvas refs around for later
         self.window = None  # Tkinter root window
         self.canvas = None  # Canvas for drawing
 
     def run(self):
         """Start the application and show the login screen"""
+        # Spin up the window and drop into the first scene
         # WINDOW INITIALISATION
         self.window = Tk()
         self.window.geometry("1280x720")

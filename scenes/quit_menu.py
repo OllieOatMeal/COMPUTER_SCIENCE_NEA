@@ -11,6 +11,7 @@ from Utils.json_handler import set_logged_in_user
 
 def tkquit():
     """Close the game"""
+    # Just exit the app immediately
     sys.exit()
 
 
@@ -22,6 +23,7 @@ class quit_menu:
     Quit menu scene controller
     Displays confirmation dialog and handles user session data
     """
+        # Old stub left here for reference
 
     def __init__(self, window, username, protecting):
         """
@@ -31,6 +33,7 @@ class quit_menu:
             username: Current logged-in username
             protecting: EncryptionService instance
         """
+        # Keep state for the quit flow
         self.window = window
         self.username = username
         self.protecting = protecting
@@ -42,6 +45,7 @@ class quit_menu:
         Remove all UI elements from the quit screen
         Attempts to destroy widgets and fallback to place_forget
         """
+        # Clean up widgets before leaving
         for element in self.elements.values():
             try:
                 element.destroy()  # Fully remove the widget
@@ -57,6 +61,7 @@ class quit_menu:
         Load and create all UI elements for the quit confirmation dialog
         Sets up background, frame, labels, and buttons
         """
+        # Build the quit confirmation UI
         # LOAD BACKGROUND
         try:
             self.main_background = PhotoImage(file=main_background)
@@ -98,6 +103,7 @@ class quit_menu:
 
     def quit_unconfirm(self):
         """Cancel quit operation and return to main menu"""
+        # Go back without quitting
         self.clear_quit_screen()
         from scenes.main_menu import main_menu
         main = main_menu(self.window, self.username, self.protecting)
@@ -108,6 +114,7 @@ class quit_menu:
         Save current user session data to JSON file
         Encrypts username and preserves all existing JSON data
         """
+        # Save the logged-in user to disk
         # Safely extract raw username string
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
 
@@ -119,5 +126,6 @@ class quit_menu:
         Main entry point for quit menu scene
         Loads UI and saves user session before showing confirmation
         """
+        # Save session and show confirmation
         self.load_utils()
         self.save_current_user()

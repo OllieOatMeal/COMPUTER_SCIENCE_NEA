@@ -9,6 +9,7 @@ from variables import frame_colour, button_colour, font, main_background, fall_b
 class multiplayer:
     """Multiplayer game (not finished yet)"""
     def __init__(self, window, username, balance, protecting):
+        # Keep state for this placeholder screen
         self.window = window
         self.username = username
         self.balance = balance
@@ -16,10 +17,12 @@ class multiplayer:
         self.protecting = protecting
 
     def clear_screen(self):
+        # Hide widgets before leaving the scene
         for element in self.elements.values():
             element.place_forget()
 
     def load_utils(self):
+        # Build the placeholder UI and background
         try:
             self.main_background = PhotoImage(file=main_background)
         except (TclError, OSError) as e:
@@ -47,10 +50,12 @@ class multiplayer:
             element.lift()
 
     def back_to_main_menu(self):
+        # Return to main menu
         from scenes.main_menu import main_menu
         self.clear_screen()
         main_meu = main_menu(self.window, self.username, self.protecting)
         main_meu.run()
 
     def run(self):
+        # Build and show placeholder screen
         self.load_utils()

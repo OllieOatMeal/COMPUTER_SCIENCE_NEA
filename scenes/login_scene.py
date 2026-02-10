@@ -19,6 +19,7 @@ MAX_LENGTH = 12  # Maximum characters for username and password
 
 def tkquit():
     """Close the application"""
+    # Just exit straight away
     sys.exit()
 
 
@@ -33,6 +34,7 @@ class login:
             protecting: EncryptionService instance
             music_controller: music controller instance
         """
+        # Keep references for the login flow
         self.img_background = None
         self.window = window
         self.protecting = protecting
@@ -47,6 +49,7 @@ class login:
 
     def clear_login_screen(self):
         """Remove all UI elements from the login screen"""
+        # Hide current widgets before switching scenes
         for element in self.elements.values():
             element.place_forget()
 
@@ -55,6 +58,7 @@ class login:
         Load and create all UI elements for the login screen
         Sets up background image, frames, buttons, and input fields
         """
+        # Build the login UI
         # CREATE MAIN FRAME
         self.login_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.login_frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=700, height=700)
@@ -117,6 +121,7 @@ class login:
 
     def create_login_screen(self):
         """Position all UI elements on the login screen"""
+        # Place the widgets where they belong
         self.elements["enter_username_label"].place(relx=0.5, rely=0.2, anchor=CENTER)
         self.elements["username_field"].place(relx=0.5, rely=0.3125, anchor=CENTER)
         self.elements["enter_password_label"].place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -132,6 +137,7 @@ class login:
         Checks for disallowed characters and length constraints
         Returns: bool - True if inputs are valid
         """
+        # Check username and password rules
         username = self.username.get() if hasattr(self.username, 'get') else self.username
         password = self.password.get()
 
@@ -174,6 +180,7 @@ class login:
         Validates inputs and checks credentials against database
         Transitions to main menu on success
         """
+        # Run the login flow and show errors if needed
         self.elements["message_label"].config(text="")  # Clear previous messages
 
         if not self.validate_inputs():
@@ -204,6 +211,7 @@ class login:
         Handle signup button press
         Creates new user account with default starting money
         """
+        # Create a new user after validation
         self.elements["message_label"].config(text="")  # Clear previous messages
 
         if not self.validate_inputs():
@@ -232,6 +240,7 @@ class login:
         Check if a user was previously logged in
         Loads user data from saved JSON file and transitions to main menu
         """
+        # Auto-login if we have a saved user
         # Use json_handler helpers which integrate with EncryptionService
         data_username = get_logged_in_user(self.protecting)
 
@@ -258,6 +267,7 @@ class login:
 
     def acc_deleted(self):
         """Display account deleted message and reload login screen"""
+        # Re-open login with a message
         self.run()
         self.elements["message_label"].place(relx=0.5, rely=0.75, anchor=CENTER)
         self.elements["message_label"].config(text="Your account was deleted")
@@ -267,6 +277,7 @@ class login:
         Load and display login screen (called when logging out from main menu)
         Does not check for pre-loaded user
         """
+        # Rebuild login UI without auto-login
         self.load_utils()
         self.create_login_screen()
 
@@ -275,6 +286,7 @@ class login:
         Main entry point for login scene
         Loads UI and checks for pre-loaded user
         """
+        # Build login and attempt auto-login
         self.load_utils()
         self.create_login_screen()
         self.check_pre_loaded_user()

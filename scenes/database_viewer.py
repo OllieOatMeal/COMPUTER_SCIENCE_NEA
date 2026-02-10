@@ -20,6 +20,7 @@ class database_viewer:
             username: Current logged-in admin username
             protecting: EncryptionService instance
         """
+        # Just keep references for the admin view
         self.window = window
         self.username = username
         self.protecting = protecting
@@ -28,6 +29,7 @@ class database_viewer:
 
     def clear_screen(self):
         """Remove all UI elements from the database viewer"""
+        # Clear widgets so the next scene is clean
         for element in self.elements.values():
             try:
                 element.place_forget()
@@ -37,6 +39,7 @@ class database_viewer:
 
     def load_utils(self):
         """Load and create all UI elements for the database viewer"""
+        # Build the scrolling table layout
         # LOAD BACKGROUND IMAGE
         try:
             self.main_background = PhotoImage(file=main_background)
@@ -80,9 +83,11 @@ class database_viewer:
 
         # Update scroll region when content changes
         def on_configure(event):
+            # Keep the scroll region in sync with content size
             canvas.configure(scrollregion=canvas.bbox("all"))
 
         def on_canvas_configure(event):
+            # Match inner frame width to canvas width
             canvas.itemconfig(window_id, width=event.width)
 
         scrollable_frame.bind("<Configure>", on_configure)
@@ -114,6 +119,7 @@ class database_viewer:
 
     def create_database_view(self):
         """Display database with all user data decrypted"""
+        # Fill the table with current DB data
         # PLACE BUTTONS
         self.elements["back_button"].place(relx=0.05, rely=0.95, anchor='w')
         self.elements["refresh_button"].place(relx=0.95, rely=0.95, anchor='e')
@@ -222,6 +228,7 @@ class database_viewer:
 
     def _format_timestamp(self, timestamp):
         """Format ISO timestamp to readable date"""
+        # Convert ISO strings to a short, readable format
         if not timestamp or timestamp == 'N/A':
             return 'N/A'
         try:
@@ -247,6 +254,7 @@ class database_viewer:
 
     def back_to_admin_panel(self):
         """Return to admin panel"""
+        # Jump back to the admin panel scene
         self.clear_screen()
         from scenes.admin_panel import admin_panel
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -255,5 +263,6 @@ class database_viewer:
 
     def run(self):
         """Main entry point for database viewer"""
+        # Build and show the database viewer
         self.load_utils()
         self.create_database_view()

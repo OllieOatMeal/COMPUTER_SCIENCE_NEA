@@ -13,6 +13,7 @@ class EncryptionService:
 
     def __init__(self):
         """Initialize and load the encryption key from environment"""
+        # Grab the key right away so this is ready to go
         self.key = None
         self.get_key()  # Load key immediately on init
 
@@ -21,6 +22,7 @@ class EncryptionService:
         Retrieve encryption key from environment variables
         Raises ValueError if key is not found
         """
+        # Just read the key from the environment
         key = os.getenv("CSNEA_KEY")
         if key is None:
             raise ValueError("Encryption key not found in environment variables.")
@@ -32,6 +34,7 @@ class EncryptionService:
         Args: data (bytes) - data to encrypt/decrypt
         Returns: bytes - XOR encrypted/decrypted data
         """
+        # Do a simple XOR pass over the bytes
         result = bytearray()
         # XOR each byte with corresponding key character
         for i in range(len(data)):
@@ -45,6 +48,7 @@ class EncryptionService:
         Args: plaintext (str) - text to encrypt
         Returns: str - Base64 encoded encrypted data
         """
+        # Salt + XOR + Base64 so it's safe to store
         # Generate random 8-byte salt for added security
         salt = os.urandom(8)
         data = salt + plaintext.encode('utf-8')
@@ -63,6 +67,7 @@ class EncryptionService:
         Args: plaintext (str)
         Returns: str - Base64 encoded encrypted data
         """
+        # Same input -> same output for lookup fields
         data = plaintext.encode('utf-8')
         encrypted_bytes = self._xor_process(data)
         encoded = base64.b64encode(encrypted_bytes)
@@ -74,6 +79,7 @@ class EncryptionService:
         Args: ciphertext (str) - Base64 encoded encrypted data
         Returns: str - decrypted plaintext
         """
+        # Reverse the deterministic XOR + Base64
         encrypted_bytes = base64.b64decode(ciphertext)
         decrypted_bytes = self._xor_process(encrypted_bytes)
         return decrypted_bytes.decode('utf-8')
@@ -84,6 +90,7 @@ class EncryptionService:
         Args: ciphertext (str) - Base64 encoded encrypted data
         Returns: str - decrypted plaintext
         """
+        # Decode, XOR, then drop the salt
         # Decode from Base64
         encrypted_bytes = base64.b64decode(ciphertext)
         

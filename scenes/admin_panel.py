@@ -20,6 +20,7 @@ class admin_panel:
             username: Current logged-in admin username
             protecting: EncryptionService instance
         """
+        # Just keep state for this admin session
         self.window = window
         self.username = username
         self.protecting = protecting
@@ -36,6 +37,7 @@ class admin_panel:
 
     def clear_screen(self):
         """Remove all UI elements from the admin panel"""
+        # Just clear widgets so the next scene can render
         for element in self.elements.values():
             try:
                 element.place_forget()
@@ -45,6 +47,7 @@ class admin_panel:
 
     def load_utils(self):
         """Load and create all UI elements for the admin panel"""
+        # Just build the admin panel layout and form controls
         # LOAD BACKGROUND IMAGE
         try:
             self.main_background = PhotoImage(file=main_background)
@@ -178,6 +181,7 @@ class admin_panel:
 
     def on_user_selected(self, event):
         """Called when a user is selected from dropdown"""
+        # Fill the form fields from the selected user
         username = self.selected_username.get()
         if not username or username == "No users found":
             return
@@ -192,6 +196,7 @@ class admin_panel:
 
     def update_user(self):
         """Update the selected user's data"""
+        # Quick validate then push changes to the DB
         username = self.selected_username.get()
         if not username or username == "No users found":
             self.elements["message_label"].config(text="⚠ Please select a user first", fg='#ff6600')
@@ -231,6 +236,7 @@ class admin_panel:
 
     def clear_form(self):
         """Clear all form fields"""
+        # Reset the UI fields back to defaults
         self.selected_username.set("")
         self.password_var.set("")
         self.balance_var.set("")
@@ -240,6 +246,7 @@ class admin_panel:
 
     def back_to_main_menu(self):
         """Return to main menu"""
+        # Hop back to the main menu scene
         self.clear_screen()
         from scenes.main_menu import main_menu
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -248,6 +255,7 @@ class admin_panel:
 
     def view_database(self):
         """Open the database viewer"""
+        # Pop open the database viewer
         self.clear_screen()
         from scenes.database_viewer import database_viewer
         viewer = database_viewer(self.window, self.username, self.protecting)
@@ -255,4 +263,5 @@ class admin_panel:
 
     def run(self):
         """Main entry point for admin panel"""
+        # Build and show the admin panel
         self.load_utils()

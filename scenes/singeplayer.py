@@ -14,6 +14,7 @@ from Utils.json_handler import save_json, LOADED_USER_PATH
 class Card:
     """A single card in the deck"""
     def __init__(self, name, value, image_path):
+        # Just keep card data and try to load its image
         self.name = name
         self.value = value
         self.hidden = True
@@ -24,6 +25,7 @@ class Card:
             self.image = None
 
     def to_dict(self):
+        # Just return a quick dict version of the card
         # Returns card info as a dictionary
         return {
             "name": self.name,
@@ -34,6 +36,7 @@ class Card:
 # Represents a deck of cards
 class Deck:
     def __init__(self):
+        # Just build a fresh shuffled deck
         self.cards = []
         self.card_images = []  # Prevent garbage collection of PhotoImage
         self.card_back_image = None
@@ -41,6 +44,7 @@ class Deck:
         self.shuffle()
 
     def load_cards(self):
+        # Just load all card images and values into the deck
         # Loads all cards into the deck with images
         suits = ['S', 'D', 'C', 'H']
         ranks_values = {
@@ -64,6 +68,7 @@ class Deck:
                     self.cards.append(card.to_dict())
 
     def shuffle(self):
+        # Just randomize card order
         # Shuffles the deck using Fisher-Yates algorithm
         n = len(self.cards)
         for i in range(n - 1, 0, -1):
@@ -71,12 +76,14 @@ class Deck:
             self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
 
     def deal_card(self):
+        # Just pop the next card off the top
         # Deals (removes and returns) the top card from the deck
         if self.cards:
             return self.cards.pop(0)
         return None
 
     def reset_deck(self):
+        # Just reset the deck to a full, shuffled state
         # Resets and reshuffles the deck
         self.cards.clear()
         self.card_images.clear()
@@ -86,6 +93,7 @@ class Deck:
 # Main singleplayer blackjack game class
 class singleplayer:
     def __init__(self, window, username, balance, protecting):
+        # Just keep game state for this session
         self.window = window
         self.username = username
         self.balance = balance
@@ -107,6 +115,7 @@ class singleplayer:
         self.doubled = False
 
     def clear_screen(self):
+        # Just hide all current widgets
         # Removes all widgets from the screen
         for element in self.elements.values():
             try:
@@ -116,6 +125,7 @@ class singleplayer:
                 print(f"Widget removal error: {e}")
 
     def load_utils(self):
+        # Just build static UI and background
         # Loads background and static UI elements
         try:
             self.background = PhotoImage(file=main_background)
@@ -147,6 +157,7 @@ class singleplayer:
 
 
     def save_and_exit(self):
+        # Just save results and go back to menu
         # Saves balance and games played to the database, then returns to main menu
         # Determine actual username string (supports StringVar or plain str)
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -163,6 +174,7 @@ class singleplayer:
         Main_Menu.run()
 
     def deal_cards(self):
+        # Just start a round with two cards each
         # Deals two cards each to player and dealer at the start of a round
         self.user_deck = []
         self.dealer_deck = []
@@ -175,6 +187,7 @@ class singleplayer:
                 self.dealer_deck.append(dealer_card)
 
     def get_hand_value(self, hand):
+        # Just calculate hand value with ace adjustment
         # Calculates the value of a hand, handling Aces as 1 or 11
         value = sum(card['value'] for card in hand)
         aces = sum(1 for card in hand if card['name'].startswith('A'))
@@ -184,6 +197,7 @@ class singleplayer:
         return value
 
     def update_ui(self):
+        # Just redraw the table state based on current hands
         # Remove old card and total labels if any
         for key in list(self.elements.keys()):
             if key.startswith("card_slot_") or key.startswith("dealer_slot_") or key in ["player_total_label", "dealer_total_label"]:
@@ -270,6 +284,7 @@ class singleplayer:
             self.elements["balance_label"].config(text=f"Balance: ${self.balance}")
 
     def hit(self):
+        # Just draw a card and check for bust
         # Player draws a card
         if self.game_over:
             return
@@ -298,6 +313,7 @@ class singleplayer:
                     self.end_game("Bust! Dealer wins.")
 
     def stand(self):
+        # Just end player turn and let dealer play
         # Player stands, dealer draws until 17 or higher
         if self.game_over:
             return
@@ -322,6 +338,7 @@ class singleplayer:
         self.check_winner()
 
     def dealer_play(self):
+        # Just let dealer draw out and settle the round
         # Dealer draws until 17
         while self.get_hand_value(self.dealer_deck) < 17:
             card = self.main_deck.deal_card()
@@ -358,6 +375,7 @@ class singleplayer:
             self.check_winner()
 
     def check_winner(self):
+        # Just compare hand totals and finish the round
         # Determines the winner and ends the game
         user_val = self.get_hand_value(self.user_deck)
         self.user_val = user_val
@@ -370,6 +388,7 @@ class singleplayer:
             self.end_game("Push (Draw).")
 
     def end_game(self, message, win=False):
+        # Just apply win/loss rules and show the result
         # Ends the round, updates balance, and shows result#
         if self.user_val == 21 and len(self.user_deck) == 2:
             self.balance += 500
@@ -395,6 +414,7 @@ class singleplayer:
         self.elements["play_again"] = play_again
 
     def play_again(self):
+        # Just reset the board for another round
         self.check_bal()
         # Resets the game for another round
         if "result_label" in self.elements:
@@ -417,6 +437,7 @@ class singleplayer:
         self.update_ui()
 
     def remove_card_and_total_widgets(self):
+        # Just remove card images and total labels from the UI
         # Remove card widgets (card_slot_*, dealer_slot_*)
         for key in list(self.elements.keys()):
             try:
@@ -447,6 +468,7 @@ class singleplayer:
                 print(f"Error removing {lbl_key}: {e}")
 
     def check_bal(self):
+        # If balance is empty, delete the account and return to login
         if self.balance <= 0:
             # Determine actual username string
             username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -474,6 +496,7 @@ class singleplayer:
             return
 
     def create_screen(self):
+        # Just place static buttons and labels on the table
         # Places static UI elements (buttons, labels, static deck)
         self.elements["exit_button"].place(x=50, y=50)
         if "balance_label" in self.elements:
@@ -493,6 +516,7 @@ class singleplayer:
             #self.elements[f"static_deck_{i}"].place(x=50, y=start_y + (i - 1) * 30)
 
     def run(self):
+        # Just start a fresh round and render the UI
         # Starts the game, sets up UI and deals first cards
         self.main_deck = Deck()
         self.main_deck.load_cards()
@@ -508,6 +532,7 @@ class singleplayer:
         self.update_ui()
 
     def double_down(self):
+        # Just double the bet, draw one card, then end turn
         # Double the bet for the current hand, draw one card, then stand
         if self.split_mode:
             hand = self.split_hands[self.current_hand_idx]
@@ -547,6 +572,7 @@ class singleplayer:
             self.dealer_play()
 
     def split_hand(self):
+        # Just split matching ranks into two hands
         # Split the player's two-card hand into two hands if ranks match
         if len(self.user_deck) != 2:
             return

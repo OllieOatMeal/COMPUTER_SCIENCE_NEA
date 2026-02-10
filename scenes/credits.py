@@ -17,6 +17,7 @@ class credits_scene:
             username: Current logged-in username
             protecting: EncryptionService instance
         """
+        # Just keep scene state
         self.window = window
         self.elements = {}
         self.main_background = None
@@ -28,6 +29,7 @@ class credits_scene:
         Remove all UI elements from the credits screen
         Attempts to destroy widgets and fallback to place_forget
         """
+        # Clean up widgets before leaving the scene
         for element in self.elements.values():
             try:
                 element.destroy()  # Fully remove the widget
@@ -43,6 +45,7 @@ class credits_scene:
         Load and create all UI elements for the credits screen
         Sets up background image, frame, and credits information
         """
+        # Build the credits layout
         # CREATE CREDITS FRAME
         self.credits_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.credits_frame.place(relx=0.5, rely=0.1, anchor="n", width=1500, height=700)
@@ -79,11 +82,13 @@ class credits_scene:
 
     def create_quit_menu(self):
         """Position all UI elements on the credits screen"""
+        # Place the credits labels and buttons
         self.elements["back_button"].place(x=100, y=900)
         self.elements["credits_label"].place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def create_main_menu(self):
         """Return to main menu"""
+        # Jump back to the main menu scene
         self.clear_screen()
         from scenes.main_menu import main_menu
         Main_Menu = main_menu(self.window, self.username, self.protecting)
@@ -94,5 +99,6 @@ class credits_scene:
         Main entry point for credits scene
         Loads UI elements and displays credits
         """
+        # Build and show the credits scene
         self.load_utils()
         self.create_quit_menu()

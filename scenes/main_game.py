@@ -20,6 +20,7 @@ class main_game:
             username: Current logged-in username
             protecting: EncryptionService instance
         """
+        # Keep state for game mode selection
         self.window = window
         self.username = username
         self.elements = {}
@@ -33,6 +34,7 @@ class main_game:
         Load and create all UI elements for the game mode selection screen
         Sets up background and game mode frame
         """
+        # Build the UI and pull current balance
         # CREATE GAMEMODE FRAME
         self.gamemode_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
         self.gamemode_frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=1600, height=500)
@@ -104,12 +106,14 @@ class main_game:
 
     def clear_screen(self):
         """Remove all UI elements from the game screen"""
+        # Clear widgets before moving to another scene
         for widget in self.window.winfo_children():
             widget.place_forget()
         self.elements.clear()
 
     def back_to_main_menu(self):
         """Return to main menu"""
+        # Return to the menu scene
         self.clear_screen()
         from scenes.main_menu import main_menu
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -118,6 +122,7 @@ class main_game:
 
     def place_elements(self):
         """Position all UI elements on the game mode selection screen"""
+        # Place buttons and labels on screen
         self.elements['back_button'].place(relx=0.05, rely=0.9, anchor="w")
         self.elements['play_label'].place(relx=0.5, rely=0.5, anchor=CENTER)
         self.elements["single_player_button"].place(relx=0.25, rely=0.2, anchor=CENTER)
@@ -126,6 +131,7 @@ class main_game:
 
     def load_leaderboard(self):
         """Load and display the leaderboard scene"""
+        # Switch to the leaderboard scene
         self.clear_screen()
         from scenes.leaderboard import leaderboard
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
@@ -137,6 +143,7 @@ class main_game:
         Select singleplayer game mode
         Highlights singleplayer button and displays play button
         """
+        # Set mode and update button colors
         if self.gamemode != "singleplayer":
             self.gamemode = "singleplayer"
             self.elements["play_label"].place_forget()
@@ -145,6 +152,7 @@ class main_game:
             self.elements["multi_player_button"].config(bg=button_colour, activebackground=button_colour)
 
     def multiplayer(self):
+        # Set mode and update button colors
         if self.gamemode != "multiplayer":
             self.gamemode = "multiplayer"
             self.elements["play_label"].place_forget()
@@ -153,6 +161,7 @@ class main_game:
             self.elements["single_player_button"].config(bg=button_colour, activebackground=button_colour)
 
     def start_game(self):
+        # Launch the selected game mode
         username_value = self.username.get() if hasattr(self.username, 'get') else self.username
         if self.gamemode == "singleplayer":
             self.clear_screen()
@@ -166,6 +175,7 @@ class main_game:
             print("Error: Not starting game")
 
     def run(self):
+        # Build and show the mode selection screen
         self.clear_screen()
         self.load_utils()
         self.place_elements()

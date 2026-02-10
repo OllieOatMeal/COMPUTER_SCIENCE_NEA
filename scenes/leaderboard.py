@@ -9,6 +9,7 @@ from variables import frame_colour, button_colour, font, database_path, main_bac
 
 def comma_number(balance):
     """Format a number to show commas in thousands places"""
+    # Just add commas so it's easier to read
     return "{:,}".format(balance)
 
 
@@ -26,6 +27,7 @@ class leaderboard:
             username: Current logged-in username
             protecting: EncryptionService instance
         """
+        # Keep scene state and styling
         self.window = window
         self.username = username
         self.elements = {}
@@ -41,6 +43,7 @@ class leaderboard:
         Load and create all UI elements for the leaderboard
         Sets up background, scrollable frame, and database query results
         """
+        # Build the leaderboard layout
         # LOAD BACKGROUND IMAGE
         try:
             self.background = PhotoImage(file=main_background)
@@ -72,6 +75,7 @@ class leaderboard:
 
         # Update scroll region when content changes
         def on_configure(event):
+            # Update the scroll area when rows change
             canvas.configure(scrollregion=canvas.bbox("all"))
 
         scrollable_frame.bind("<Configure>", on_configure)
@@ -98,6 +102,7 @@ class leaderboard:
         Display leaderboard with sorted player data
         Queries database and populates scrollable list with rankings
         """
+        # Fill the leaderboard table with DB results
         # PLACE BACK BUTTON
         self.elements["back_button"].place(relx=0.1, rely=0.9, anchor=CENTER)
         sf = self.elements["scrollable_frame"]
@@ -153,17 +158,20 @@ class leaderboard:
 
     def clear_screen(self):
         """Remove all UI elements from the leaderboard screen"""
+        # Remove widgets before leaving the scene
         for element in self.elements.values():
             element.place_forget()
         self.elements.clear()
 
     def back_to_main_menu(self):
         """Return to main game screen"""
+        # Jump back to game selection
         self.clear_screen()
         from scenes.main_game import main_game
         MainGame = main_game(self.window, self.username, self.protecting)
         MainGame.run()
 
     def run(self):
+        # Build and show leaderboard
         self.load_utils()
         self.create_leaderboard_screen()

@@ -5,7 +5,7 @@ All the constants I use throughout the app go here
 
 # Game metadata
 game_name = "Casino Royale"
-game_version = "V16"
+game_version = "V16.1"
 game_creator = "Ollie O'Neill"
 
 # Application directory path

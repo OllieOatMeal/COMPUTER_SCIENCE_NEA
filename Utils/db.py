@@ -10,11 +10,13 @@ from variables import database_path
 
 def _now_iso() -> str:
     """Return current UTC time as ISO 8601 string."""
+    # Simple timestamp helper
     return datetime.now(timezone.utc).isoformat()
 
 
 def _ensure_schema(conn: sqlite3.Connection) -> None:
     """Ensure optional columns exist on Users table."""
+    # Patch in missing columns without breaking older DBs
     try:
         cur = conn.cursor()
         cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Users'")
@@ -40,6 +42,7 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
 
 
 def _connect():
+    # Open DB connection and make sure schema is up to date
     conn = sqlite3.connect(database_path)
     _ensure_schema(conn)
     return conn
@@ -50,6 +53,7 @@ def _encode_username(username: str, protecting=None) -> str:
     Encode username deterministically for DB lookups.
     Uses deterministic encryption when protecting is provided.
     """
+    # Keep lookups consistent when encryption is on
     if protecting:
         try:
             return protecting.encrypt_deterministic(username)
@@ -60,6 +64,7 @@ def _encode_username(username: str, protecting=None) -> str:
 
 def get_user_password(username: str, protecting=None) -> Optional[str]:
     """Look up a user and return their password"""
+    # Fetch and decrypt the password for login checks
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -90,6 +95,7 @@ def user_exists(username: str, protecting=None) -> bool:
     Returns:
         True if user exists, False otherwise
     """
+    # Quick existence check for signup/login
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -123,6 +129,7 @@ def create_user(
     Returns:
         True if successful, False otherwise
     """
+    # Insert a new user record (encrypted if needed)
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -183,6 +190,7 @@ def get_money(username: str, protecting=None) -> int:
     Returns:
         User's balance as integer
     """
+    # Read and decrypt user balance
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -213,6 +221,7 @@ def get_games_played(username: str, protecting=None) -> int:
     Returns:
         Games played count as integer
     """
+    # Read and decrypt games played
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -245,6 +254,7 @@ def update_money_and_games(username: str, money: int, games_played: int, protect
     Returns:
         True if successful, False otherwise
     """
+    # Update balance and games together
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -285,6 +295,7 @@ def increment_games_and_update_money(username: str, money: int, protecting=None)
     Returns:
         True if successful, False otherwise
     """
+    # Add one game and update balance in one write
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -337,6 +348,7 @@ def delete_user(username: str, protecting=None) -> bool:
     Returns:
         True if successful, False otherwise
     """
+    # Remove a user row
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -351,6 +363,7 @@ def delete_user(username: str, protecting=None) -> bool:
 
 def update_last_login(username: str, protecting=None) -> bool:
     """Update user's last login timestamp (and UpdatedAt)."""
+    # Touch last_login and updated_at fields
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -389,6 +402,7 @@ def get_leaderboard(protecting=None, order_by: str = "GamesPlayed") -> List[Tupl
     Returns:
         List of (username, money, games_played) tuples
     """
+    # Fetch leaderboard data and decrypt if needed
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -431,6 +445,7 @@ def get_leaderboard(protecting=None, order_by: str = "GamesPlayed") -> List[Tupl
 
 def get_is_admin(username: str, protecting=None) -> bool:
     """Return True if the user is marked as admin."""
+    # Check admin flag for menu gating
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -454,6 +469,7 @@ def get_is_admin(username: str, protecting=None) -> bool:
 
 def set_is_admin(username: str, is_admin: bool, protecting=None) -> bool:
     """Set the admin flag for a user."""
+    # Update admin flag and timestamps
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -480,6 +496,7 @@ def set_is_admin(username: str, is_admin: bool, protecting=None) -> bool:
 
 def get_all_usernames(protecting=None) -> List[str]:
     """Get list of all usernames (decrypted)."""
+    # Pull a list of usernames for admin screens
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -497,6 +514,7 @@ def get_all_usernames(protecting=None) -> List[str]:
 
 def get_user_data(username: str, protecting=None) -> Optional[dict]:
     """Get all user data for a username."""
+    # Fetch full user row and decrypt if needed
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -572,6 +590,7 @@ def get_user_data(username: str, protecting=None) -> Optional[dict]:
 
 def update_user_password(username: str, new_password: str, protecting=None) -> bool:
     """Update user's password."""
+    # Change password with optional encryption
     try:
         conn = _connect()
         cur = conn.cursor()
@@ -598,6 +617,7 @@ def update_user_password(username: str, new_password: str, protecting=None) -> b
 
 def update_user_balance(username: str, new_balance: int, protecting=None) -> bool:
     """Update user's balance."""
+    # Change balance with optional encryption
     try:
         conn = _connect()
         cur = conn.cursor()
