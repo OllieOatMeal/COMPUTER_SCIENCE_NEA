@@ -13,14 +13,14 @@ class quit_menu:
         pass
 
     def __init__(self, window, username, protecting):
-        self.window = window
-        self.username = username
-        self.protecting = protecting
-        self.elements = {}
-        self.main_background = None
+        self._window = window
+        self._username = username
+        self._protecting = protecting
+        self._elements = {}
+        self._main_background = None
 
     def clear_quit_screen(self):
-        for element in self.elements.values():
+        for element in self._elements.values():
             try:
                 element.destroy()
             except:
@@ -28,53 +28,53 @@ class quit_menu:
                     element.place_forget()
                 except:
                     pass
-        self.elements.clear()
+        self._elements.clear()
 
     def load_utils(self):
         try:
-            self.main_background = PhotoImage(file=main_background)
-            bg = Label(self.window, image=self.main_background)
+            self._main_background = PhotoImage(file=main_background)
+            bg = Label(self._window, image=self._main_background)
             bg.place(x=0, y=0, relwidth=1, relheight=1)
             bg.lower()
-            self.elements["background"] = bg
+            self._elements["background"] = bg
         except Exception as e:
             print("Error loading background:", e)
-            self.window.configure(bg=fall_back_colour)
+            self._window.configure(bg=fall_back_colour)
 
-        frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
+        frame = Frame(self._window, bg=frame_colour, bd=10, relief=RIDGE)
         frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=700, height=400)
-        self.elements["frame"] = frame
+        self._elements["frame"] = frame
 
         label = Label(frame, text="Are you sure you want to quit?",
                       font=(font, 25, 'bold'), bg=button_colour, fg="white", bd=10, relief=RIDGE,
                       wraplength=600, justify="center")
         label.place(relx=0.5, rely=0.25, anchor=CENTER)
-        self.elements["label"] = label
+        self._elements["label"] = label
 
         btn_no = Button(frame, text="NO", width=10, font=(font, 30, 'bold'),
                         bg=button_colour, fg="white", bd=10, relief=RIDGE,
                         activebackground=button_colour, activeforeground="white",
                         command=self.quit_unconfirm)
         btn_no.place(relx=0.5, rely=0.55, anchor=CENTER)
-        self.elements["btn_no"] = btn_no
+        self._elements["btn_no"] = btn_no
 
         btn_yes = Button(frame, text="YES", width=10, font=(font, 30, 'bold'),
                          bg=button_colour, fg="white", bd=10, relief=RIDGE,
                          activebackground=button_colour, activeforeground="white",
                          command=tkquit)
         btn_yes.place(relx=0.5, rely=0.85, anchor=CENTER)
-        self.elements["btn_yes"] = btn_yes
+        self._elements["btn_yes"] = btn_yes
 
     def quit_unconfirm(self):
         self.clear_quit_screen()
         from scenes.main_menu import main_menu
-        main = main_menu(self.window, self.username, self.protecting)
+        main = main_menu(self._window, self._username, self._protecting)
         main.run()
 
     def save_current_user(self):
-        username_value = self.username.get() if hasattr(self.username, 'get') else self.username
+        username_value = self._username.get() if hasattr(self._username, 'get') else self._username
 
-        set_logged_in_user(username_value, protecting=self.protecting, encrypt=True)
+        set_logged_in_user(username_value, protecting=self._protecting, encrypt=True)
 
     def run(self):
         self.load_utils()

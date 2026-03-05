@@ -6,32 +6,32 @@ from Utils.db import get_leaderboard, get_user_data, get_all_usernames
 
 class database_viewer:
     def __init__(self, window, username, protecting):
-        self.window = window
-        self.username = username
-        self.protecting = protecting
-        self.elements = {}
-        self.main_background = None
+        self._window = window
+        self._username = username
+        self._protecting = protecting
+        self._elements = {}
+        self._main_background = None
 
     def clear_screen(self):
-        for element in self.elements.values():
+        for element in self._elements.values():
             try:
                 element.place_forget()
             except:
                 pass
-        self.elements.clear()
+        self._elements.clear()
 
     def load_utils(self):
         try:
-            self.main_background = PhotoImage(file=main_background)
-            bg_label = Label(self.window, image=self.main_background)
+            self._main_background = PhotoImage(file=main_background)
+            bg_label = Label(self._window, image=self._main_background)
             bg_label.place(x=0, y=0, relwidth=1, relheight=1)
             bg_label.lower()
-            self.elements["background_label"] = bg_label
+            self._elements["background_label"] = bg_label
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg=fall_back_colour)
+            self._window.configure(bg=fall_back_colour)
 
-        main_frame = Frame(self.window, bg=frame_colour, bd=10, relief=RIDGE)
+        main_frame = Frame(self._window, bg=frame_colour, bd=10, relief=RIDGE)
         main_frame.place(relx=0.5, rely=0.05, anchor="n", width=1800, height=860)
 
         title_label = Label(main_frame, text="Database Viewer", 
@@ -63,17 +63,17 @@ class database_viewer:
         scrollable_frame.bind("<Configure>", on_configure)
         canvas.bind("<Configure>", on_canvas_configure)
 
-        back_button = Button(self.window, text="Back", font=(font, 22, 'bold'),
+        back_button = Button(self._window, text="Back", font=(font, 22, 'bold'),
                      relief=RAISED, bd=6, bg=button_colour, width=8,
                      activebackground=button_colour, fg='#ffffff',
                      activeforeground='#ffffff', command=self.back_to_admin_panel)
 
-        refresh_button = Button(self.window, text="Refresh", font=(font, 22, 'bold'),
+        refresh_button = Button(self._window, text="Refresh", font=(font, 22, 'bold'),
                     relief=RAISED, bd=6, bg=button_colour, width=8,
                     activebackground=button_colour, fg='#ffffff',
                     activeforeground='#ffffff', command=self.create_database_view)
 
-        self.elements = {
+        self._elements = {
             "main_frame": main_frame,
             "canvas": canvas,
             "scrollbar": scrollbar,
@@ -85,16 +85,16 @@ class database_viewer:
         }
 
     def create_database_view(self):
-        self.elements["back_button"].place(relx=0.05, rely=0.95, anchor='w')
-        self.elements["refresh_button"].place(relx=0.95, rely=0.95, anchor='e')
-        sf = self.elements["scrollable_frame"]
+        self._elements["back_button"].place(relx=0.05, rely=0.95, anchor='w')
+        self._elements["refresh_button"].place(relx=0.95, rely=0.95, anchor='e')
+        sf = self._elements["scrollable_frame"]
 
         for widget in sf.winfo_children():
             widget.destroy()
 
-        usernames = get_all_usernames(self.protecting)
+        usernames = get_all_usernames(self._protecting)
 
-        self.elements["user_count_label"].config(text=f"Total Users: {len(usernames) if usernames else 0}")
+        self._elements["user_count_label"].config(text=f"Total Users: {len(usernames) if usernames else 0}")
 
         if not usernames:
             no_data_label = Label(sf, text="⚠ No users in database", 
@@ -122,14 +122,14 @@ class database_viewer:
         row_bg_colors = ['#757575', '#8d8d8d']
 
         for i, username in enumerate(usernames, start=1):
-            user_data = get_user_data(username, self.protecting)
+            user_data = get_user_data(username, self._protecting)
             
             if not user_data:
                 continue
 
             bg_color = row_bg_colors[i % 2]
 
-            current_user = self.username.get() if hasattr(self.username, 'get') else self.username
+            current_user = self._username.get() if hasattr(self._username, 'get') else self._username
             if username.strip().lower() == (current_user or "").strip().lower():
                 bg_color = '#FFD700'
                 fg_color = '#000000'
@@ -199,8 +199,8 @@ class database_viewer:
     def back_to_admin_panel(self):
         self.clear_screen()
         from scenes.admin_panel import admin_panel
-        username_value = self.username.get() if hasattr(self.username, 'get') else self.username
-        panel = admin_panel(self.window, username_value, self.protecting)
+        username_value = self._username.get() if hasattr(self._username, 'get') else self._username
+        panel = admin_panel(self._window, username_value, self._protecting)
         panel.run()
 
     def run(self):

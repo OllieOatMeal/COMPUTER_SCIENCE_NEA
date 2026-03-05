@@ -5,19 +5,19 @@ import base64
 
 class EncryptionService:
     def __init__(self):
-        self.key = None
+        self._key = None
         self.get_key()
 
     def get_key(self):
         key = os.getenv("CSNEA_KEY")
         if key is None:
             raise ValueError("Encryption key not found in environment variables.")
-        self.key = key
+        self._key = key
 
     def _xor_process(self, data):
         result = bytearray()
         for i in range(len(data)):
-            key_char = self.key[i % len(self.key)]
+            key_char = self._key[i % len(self._key)]
             result.append(data[i] ^ ord(key_char))
         return bytes(result)
 

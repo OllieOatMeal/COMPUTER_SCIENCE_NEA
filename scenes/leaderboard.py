@@ -9,34 +9,34 @@ def comma_number(balance):
 
 class leaderboard:
     def __init__(self, window, username, protecting):
-        self.window = window
-        self.username = username
-        self.elements = {}
-        self.background = None
-        self.frame_colour = frame_colour
-        self.button_colour = button_colour
-        self.font = font
-        self.db_path = database_path
-        self.protecting = protecting
+        self._window = window
+        self._username = username
+        self._elements = {}
+        self._background = None
+        self._frame_colour = frame_colour
+        self._button_colour = button_colour
+        self._font = font
+        self._db_path = database_path
+        self._protecting = protecting
 
     def load_utils(self):
         try:
-            self.background = PhotoImage(file=main_background)
-            bg_label = Label(self.window, image=self.background)
+            self._background = PhotoImage(file=main_background)
+            bg_label = Label(self._window, image=self._background)
             bg_label.place(x=0, y=0, relwidth=1, relheight=1)
-            self.elements["background_label"] = bg_label
+            self._elements["background_label"] = bg_label
         except Exception as e:
             print(f"Error loading background image: {e}")
-            self.window.configure(bg=fall_back_colour)
+            self._window.configure(bg=fall_back_colour)
 
-        frame = Frame(self.window, bg=self.frame_colour, bd=10, relief=RIDGE)
+        frame = Frame(self._window, bg=self._frame_colour, bd=10, relief=RIDGE)
         frame.place(relx=0.5, rely=0.1, anchor="n", width=1000, height=900)
 
-        canvas = Canvas(frame, bg=self.frame_colour, highlightthickness=0)
+        canvas = Canvas(frame, bg=self._frame_colour, highlightthickness=0)
         scrollbar = Scrollbar(frame, orient=VERTICAL, command=canvas.yview)
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        scrollable_frame = Frame(canvas, bg=self.frame_colour)
+        scrollable_frame = Frame(canvas, bg=self._frame_colour)
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor='nw')
 
@@ -49,13 +49,13 @@ class leaderboard:
         scrollable_frame.bind("<Configure>", on_configure)
 
         back_button = Button(
-            self.window, text="Back", font=(self.font, 30, 'bold'), width=9,
-            relief=RAISED, bd=10, bg=self.button_colour, activebackground=self.button_colour,
+            self._window, text="Back", font=(self._font, 30, 'bold'), width=9,
+            relief=RAISED, bd=10, bg=self._button_colour, activebackground=self._button_colour,
             fg='#ffffff', activeforeground='#ffffff',
             command=self.back_to_main_menu
         )
 
-        self.elements = {
+        self._elements = {
             "frame": frame,
             "canvas": canvas,
             "scrollbar": scrollbar,
@@ -64,8 +64,8 @@ class leaderboard:
         }
 
     def create_leaderboard_screen(self):
-        self.elements["back_button"].place(relx=0.1, rely=0.9, anchor=CENTER)
-        sf = self.elements["scrollable_frame"]
+        self._elements["back_button"].place(relx=0.1, rely=0.9, anchor=CENTER)
+        sf = self._elements["scrollable_frame"]
 
         for widget in sf.winfo_children():
             widget.destroy()
@@ -74,16 +74,16 @@ class leaderboard:
         sf.grid_columnconfigure(1, weight=1)
         sf.grid_columnconfigure(2, weight=1)
 
-        rows = get_leaderboard(self.protecting, order_by="Money")
+        rows = get_leaderboard(self._protecting, order_by="Money")
 
-        header_font = (self.font, 15, 'bold')
-        Label(sf, text="Username", font=(header_font, 20, 'bold'), bg=self.frame_colour, fg='white', width=15,
+        header_font = (self._font, 15, 'bold')
+        Label(sf, text="Username", font=(header_font, 20, 'bold'), bg=self._frame_colour, fg='white', width=15,
               anchor='w') \
             .grid(row=0, column=0, padx=10, pady=5, sticky='w')
-        Label(sf, text="Games Played", font=(header_font, 20, 'bold'), bg=self.frame_colour, fg='white', width=15,
+        Label(sf, text="Games Played", font=(header_font, 20, 'bold'), bg=self._frame_colour, fg='white', width=15,
               anchor='center') \
             .grid(row=0, column=1, padx=10, pady=5, sticky='ew')
-        Label(sf, text="Balance", font=(header_font, 20, 'bold'), bg=self.frame_colour, fg='white', width=20,
+        Label(sf, text="Balance", font=(header_font, 20, 'bold'), bg=self._frame_colour, fg='white', width=20,
               anchor='e') \
             .grid(row=0, column=2, padx=10, pady=5, sticky='e')
 
@@ -93,29 +93,29 @@ class leaderboard:
             balance = comma_number(balance)
             bg_color = row_bg_colors[i % 2]
 
-            current_user = self.username.get() if hasattr(self.username, 'get') else self.username
+            current_user = self._username.get() if hasattr(self._username, 'get') else self._username
             if username.strip().lower() == (current_user or "").strip().lower():
                 bg_color = '#FFD700'
 
-            Label(sf, text=username, font=(self.font, 16), bg=bg_color,
+            Label(sf, text=username, font=(self._font, 16), bg=bg_color,
                   fg='black' if bg_color == '#FFD700' else 'white',
                   width=15, anchor='w').grid(row=i, column=0, padx=10, pady=2, sticky='w')
-            Label(sf, text=str(games_played), font=(self.font, 16), bg=bg_color,
+            Label(sf, text=str(games_played), font=(self._font, 16), bg=bg_color,
                   fg='black' if bg_color == '#FFD700' else 'white',
                   width=10, anchor='center').grid(row=i, column=1, padx=10, pady=2, sticky='ew')
-            Label(sf, text=f"${balance}", font=(self.font, 16), bg=bg_color,
+            Label(sf, text=f"${balance}", font=(self._font, 16), bg=bg_color,
                   fg='black' if bg_color == '#FFD700' else 'white',
                   width=18, anchor='e').grid(row=i, column=2, padx=10, pady=2, sticky='e')
 
     def clear_screen(self):
-        for element in self.elements.values():
+        for element in self._elements.values():
             element.place_forget()
-        self.elements.clear()
+        self._elements.clear()
 
     def back_to_main_menu(self):
         self.clear_screen()
         from scenes.main_game import main_game
-        MainGame = main_game(self.window, self.username, self.protecting)
+        MainGame = main_game(self._window, self._username, self._protecting)
         MainGame.run()
 
     def run(self):
