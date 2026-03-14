@@ -1,10 +1,22 @@
+"""
+
+# Code to load the database viewer to users that have the admin privilege
+
+"""
+
+"""
+# Import necessary functions/ procedures
+"""
 from tkinter import *
 from tkinter import ttk
 from variables import font, button_colour, frame_colour, main_background, fall_back_colour
 from Utils.db import get_leaderboard, get_user_data, get_all_usernames
 
-
+"""
+# Main class to control the scene
+"""
 class database_viewer:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._username = username
@@ -12,14 +24,22 @@ class database_viewer:
         self._elements = {}
         self._main_background = None
 
+    # Removes all elements from the screen apart from the main background
     def clear_screen(self):
         for element in self._elements.values():
             try:
-                element.place_forget()
+                element.destroy()
             except:
-                pass
+                try:
+                    element.place_forget()
+                except:
+                    pass
         self._elements.clear()
 
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         try:
             self._main_background = PhotoImage(file=main_background)
@@ -84,6 +104,7 @@ class database_viewer:
             "user_count_label": user_count_label,
         }
 
+    # Creates and displays the database view with user information in a table format
     def create_database_view(self):
         self._elements["back_button"].place(relx=0.05, rely=0.95, anchor='w')
         self._elements["refresh_button"].place(relx=0.95, rely=0.95, anchor='e')
@@ -174,6 +195,7 @@ class database_viewer:
             Label(sf, text=last_login_display, font=cell_font, bg=bg_color, fg=fg_color,
                 relief=RIDGE, bd=1, anchor='center', padx=6, pady=10).grid(row=i, column=7, sticky='nsew', padx=1)
 
+    # Formats a timestamp string into a readable date and time format
     def _format_timestamp(self, timestamp):
         if not timestamp or timestamp == 'N/A':
             return 'N/A'
@@ -196,6 +218,7 @@ class database_viewer:
             pass
         return timestamp
 
+    # Loads the admin panel scene
     def back_to_admin_panel(self):
         self.clear_screen()
         from scenes.admin_panel import admin_panel
@@ -203,6 +226,7 @@ class database_viewer:
         panel = admin_panel(self._window, username_value, self._protecting)
         panel.run()
 
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()
         self.create_database_view()

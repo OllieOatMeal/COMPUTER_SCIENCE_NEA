@@ -1,15 +1,26 @@
+"""
+
+# Code to load the credits scene
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
-
+"""
+# Main class to control the scene
+"""
 class credits_scene:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._elements = {}
         self._main_background = None
         self._username = username
         self._protecting = protecting
-
+    # Removes all elements from the screen apart from the main background
     def clear_screen(self):
         for element in self._elements.values():
             try:
@@ -20,7 +31,11 @@ class credits_scene:
                 except:
                     pass
         self._elements.clear()
-
+        
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         self._credits_frame = Frame(self._window, bg=frame_colour, bd=10, relief=RIDGE)
         self._credits_frame.place(relx=0.5, rely=0.1, anchor="n", width=1500, height=700)
@@ -50,16 +65,16 @@ class credits_scene:
             "frame": self._credits_frame,
         }
 
-    def create_quit_menu(self):
         self._elements["back_button"].place(x=100, y=900)
         self._elements["credits_label"].place(relx=0.5, rely=0.5, anchor=CENTER)
 
+    # Loads the main menu scene
     def create_main_menu(self):
         self.clear_screen()
         from scenes.main_menu import main_menu
         Main_Menu = main_menu(self._window, self._username, self._protecting)
         Main_Menu.run()
 
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()
-        self.create_quit_menu()

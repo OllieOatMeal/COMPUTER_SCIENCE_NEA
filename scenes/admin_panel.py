@@ -1,10 +1,22 @@
+"""
+
+# Code to load the admin panel to users that have the admin privledge
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 from tkinter import ttk
 from variables import font, button_colour, frame_colour, main_background, fall_back_colour
 from Utils.db import get_all_usernames, get_user_data, update_user_password, update_user_balance, set_is_admin
 
-
+"""
+# Main class to control the scene
+"""
 class admin_panel:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._username = username
@@ -19,13 +31,19 @@ class admin_panel:
         self._games_var = StringVar()
         self._admin_var = IntVar()
 
+    # Removes all elements from the screen apart from the main background
     def clear_screen(self):
         for element in self._elements.values():
             try:
-                element.place_forget()
+                element.destroy()
             except:
-                pass
+                try:
+                    element.place_forget()
+                except:
+                    pass
         self._elements.clear()
+
+    # Removes all elements from the screen apart from the main background
 
     def load_utils(self):
         try:
@@ -144,6 +162,7 @@ class admin_panel:
         back_button.place(relx=0.025, rely=0.96, anchor='w')
         self._elements["back_button"] = back_button
 
+    # Fills elements on screen with the current selected user's decrypted data
     def on_user_selected(self, event):
         username = self._selected_username.get()
         if not username or username == "No users found":
@@ -157,6 +176,7 @@ class admin_panel:
             self._admin_var.set(1 if user_data.get("is_admin", False) else 0)
             self._elements["message_label"].config(text=f"✓ Loaded data for {username}", fg="#ffffff")
 
+    # Encrypts and updates the database for the selected user
     def update_user(self):
         username = self._selected_username.get()
         if not username or username == "No users found":
@@ -192,6 +212,7 @@ class admin_panel:
         else:
             self._elements["message_label"].config(text="✗ Update failed - please try again", fg='#ff0000')
 
+    # Removes any data that is in the elements
     def clear_form(self):
         self._selected_username.set("")
         self._password_var.set("")
@@ -200,6 +221,7 @@ class admin_panel:
         self._admin_var.set(0)
         self._elements["message_label"].config(text="Form cleared", fg='#aaaaaa')
 
+    # Loads the main menu scene
     def back_to_main_menu(self):
         self.clear_screen()
         from scenes.main_menu import main_menu
@@ -207,11 +229,12 @@ class admin_panel:
         MainMenu = main_menu(self._window, username_value, self._protecting)
         MainMenu.run()
 
+    # Loads the database viewing scene
     def view_database(self):
         self.clear_screen()
         from scenes.database_viewer import database_viewer
         viewer = database_viewer(self._window, self._username, self._protecting)
         viewer.run()
-
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()

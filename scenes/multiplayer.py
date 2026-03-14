@@ -1,8 +1,20 @@
+"""
+
+# Code to load the multiplayer scene
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
-
+"""
+# Main class to control the scene
+"""
 class multiplayer:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, balance, protecting):
         self._window = window
         self._username = username
@@ -10,10 +22,22 @@ class multiplayer:
         self._elements = {}
         self._protecting = protecting
 
+    # Removes all elements from the screen apart from the main background
     def clear_screen(self):
         for element in self._elements.values():
-            element.place_forget()
+            try:
+                element.destroy()
+            except:
+                try:
+                    element.place_forget()
+                except:
+                    pass
+        self._elements.clear()
 
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         try:
             self._main_background = PhotoImage(file=main_background)
@@ -41,11 +65,13 @@ class multiplayer:
         for element in self._elements.values():
             element.lift()
 
+    # Load the main menu scene
     def back_to_main_menu(self):
         from scenes.main_menu import main_menu
         self.clear_screen()
         main_meu = main_menu(self._window, self._username, self._protecting)
         main_meu.run()
 
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()

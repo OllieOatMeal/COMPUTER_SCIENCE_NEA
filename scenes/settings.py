@@ -1,11 +1,23 @@
+"""
+
+# Code to load the login scene
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 from music import music
 from variables import frame_colour, button_colour, font, main_background, fall_back_colour
 import pygame
 from Utils.json_handler import set_stored_music, get_music_volume, get_music_muted, set_music_volume, set_music_muted
 
-
+"""
+# Main class to control the scene
+"""
 class settings_scene:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._protecting = protecting
@@ -16,10 +28,22 @@ class settings_scene:
         self._VOLUME = 50
         self._current_track = None
 
-    def clear_settings_screen(self):
+    # Removes all elements from the screen apart from the main background
+    def clear_screen(self):
         for element in self._elements.values():
-            element.place_forget()
+            try:
+                element.destroy()
+            except:
+                try:
+                    element.place_forget()
+                except:
+                    pass
+        self._elements.clear()
 
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         self._volume_frame = Frame(self._window, bg=frame_colour, bd=10, relief=RIDGE)
         self._volume_frame.place(relx=0.05, rely=0.15, anchor="w", width=1600, height=200)
@@ -86,6 +110,8 @@ class settings_scene:
             track_button = Button(self._tracks_frame, text=f"# {i}", font=(font, 15, 'bold'), bg=button_colour, activebackground=button_colour, fg='#ffffff', activeforeground='#ffffff', relief=RAISED, bd=5, command=lambda i=i: self.change_track_with_highlight(i))
             self._elements[f"track_button_{i}"] = track_button
 
+    # Places the elements on screen
+    # Creates the track selection buttons and places them on screen
     def create_settings_menu(self):
         self._elements["back_button"].place(x=100, y=900)
         self._elements["volume_higher_button"].place(relx=0.25, rely=0.5, anchor=CENTER)
@@ -96,6 +122,7 @@ class settings_scene:
         for i in range(1, 9):
             self._elements[f"track_button_{i}"].place(relx=0.025 + (i*0.1), rely=0.5, anchor="w")
 
+    #  Updates the track selection buttons to reflect the current track selected
     def update_track_button_colors(self):
         for i in range(1, 9):
             button = self._elements[f"track_button_{i}"]
@@ -104,21 +131,25 @@ class settings_scene:
             else:
                 button.config(bg=button_colour, activebackground=button_colour)
 
+    # Updates the track selection button colours
     def change_track_with_highlight(self, track_number):
         self._current_track = track_number
         music.change_track(self, track_number)
         self.update_track_button_colors()
 
+    # Increases the volume of the playing track
     def v_up(self):
         music.volume_up(self)
         self._elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
         self._MUSIC_MUTED = False
 
+    # Decreases the volume of the playing track
     def v_dn(self):
         music.volume_down(self)
         self._elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
         self._MUSIC_MUTED = False
 
+    # Toggle mutes the current playing track
     def v_tog(self):
         music.toggle_music(self)
         if self._MUSIC_MUTED == True:
@@ -126,6 +157,7 @@ class settings_scene:
         else:
             self._elements["volume_info_label"].config(text="Volume: " + str(round(pygame.mixer.music.get_volume() * 100, 0)) + "%")
 
+    # Loads the main menu scene
     def create_main_menu(self):
         set_stored_music(self._current_track)
         set_music_volume(self._VOLUME)
@@ -136,6 +168,7 @@ class settings_scene:
         Main_Menu = main_menu(self._window, self._username, self._protecting)
         Main_Menu.run()
 
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()
         self.create_settings_menu()

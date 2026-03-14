@@ -1,13 +1,25 @@
+"""
+
+# Code to load the leaderboard scene
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 from Utils.db import get_leaderboard
 from variables import frame_colour, button_colour, font, database_path, main_background, fall_back_colour
 
-
+"""
+# Main class to control the scene
+"""
 def comma_number(balance):
     return "{:,}".format(balance)
 
 
 class leaderboard:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._username = username
@@ -19,6 +31,22 @@ class leaderboard:
         self._db_path = database_path
         self._protecting = protecting
 
+    # Removes all elements from the screen apart from the main background
+    def clear_screen(self):
+        for element in self._elements.values():
+            try:
+                element.destroy()
+            except:
+                try:
+                    element.place_forget()
+                except:
+                    pass
+        self._elements.clear()
+
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         try:
             self._background = PhotoImage(file=main_background)
@@ -106,18 +134,13 @@ class leaderboard:
             Label(sf, text=f"${balance}", font=(self._font, 16), bg=bg_color,
                   fg='black' if bg_color == '#FFD700' else 'white',
                   width=18, anchor='e').grid(row=i, column=2, padx=10, pady=2, sticky='e')
-
-    def clear_screen(self):
-        for element in self._elements.values():
-            element.place_forget()
-        self._elements.clear()
-
+    # Loads the main menu scene
     def back_to_main_menu(self):
         self.clear_screen()
         from scenes.main_game import main_game
         MainGame = main_game(self._window, self._username, self._protecting)
         MainGame.run()
-
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()
         self.create_leaderboard_screen()

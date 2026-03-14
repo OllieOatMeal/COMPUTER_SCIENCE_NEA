@@ -1,3 +1,12 @@
+"""
+
+# Code to load the main menu
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 import random
 from tkinter import *
 from scenes.quit_menu import quit_menu
@@ -7,14 +16,17 @@ from scenes.main_game import main_game
 from Utils.db import get_is_admin
 from variables import quotes_path, font, button_colour, frame_colour, main_background, fall_back_colour
 
-
+# Loads a random quote from an external .txt file
 def get_random_quote():
     with open(quotes_path) as f:
         lines = f.readlines()
     return random.choice(lines).strip()
 
-
+"""
+# Main class to control the scene
+"""
 class main_menu:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, protecting):
         self._window = window
         self._username = username
@@ -22,11 +34,22 @@ class main_menu:
         self._main_background = None
         self._protecting = protecting
 
+    # Removes all elements from the screen apart from the main background
     def clear_main_menu(self):
         for element in self._elements.values():
-            element.place_forget()
+            try:
+                element.destroy()
+            except:
+                try:
+                    element.place_forget()
+                except:
+                    pass
         self._elements.clear()
 
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         try:
             self._main_background = PhotoImage(file=main_background)
@@ -81,6 +104,7 @@ class main_menu:
                                                    activebackground=button_colour, activeforeground='white',
                                                    command=self.load_admin_panel)
 
+    # Place all elements on the screen
     def create_main_menu(self):
         self._elements["play_button"].place(relx=0.1, rely=0.05)
         self._elements["settings_button"].place(relx=0.1, rely=0.3)
@@ -97,38 +121,45 @@ class main_menu:
         for element in self._elements.values():
             element.lift()
 
+    # Loads the main game scene
+    def load_game(self):
+        self.clear_main_menu()
+        game_scene = main_game(self._window, self._username, self._protecting)
+        game_scene.run()
+
+    # Logs the user out and loads the login scene
     def log_out(self):
         self.clear_main_menu()
         from scenes.login_scene import login
         login_scene = login(self._window, self._protecting)
         login_scene.run_from_main_menu()
 
+    # Loads the settings scene
     def load_setting_scene(self):
         self.clear_main_menu()
         setting_scene = settings_scene(self._window, self._username, self._protecting)
         setting_scene.run()
 
-    def load_game(self):
-        self.clear_main_menu()
-        game_scene = main_game(self._window, self._username, self._protecting)
-        game_scene.run()
-
-    def load_quit_menu(self):
-        self.clear_main_menu()
-        quit_scene = quit_menu(self._window, self._username, self._protecting)
-        quit_scene.run()
-
+    # Loads the credits scene
     def load_credits_scene(self):
         self.clear_main_menu()
         credits = credits_scene(self._window, self._username, self._protecting)
         credits.run()
 
+    # Loads the quit scene
+    def load_quit_menu(self):
+        self.clear_main_menu()
+        quit_scene = quit_menu(self._window, self._username, self._protecting)
+        quit_scene.run()
+
+    # Loads the admin panel scene
     def load_admin_panel(self):
         self.clear_main_menu()
         from scenes.admin_panel import admin_panel
         panel = admin_panel(self._window, self._username, self._protecting)
         panel.run()
 
+    # Runs the file (Called remotely)
     def run(self):
         self.load_utils()
         self.create_main_menu()

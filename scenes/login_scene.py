@@ -1,3 +1,12 @@
+"""
+
+# Code to load the login scene
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from Utils.db import get_user_password, user_exists, create_user, update_last_login
 from tkinter import *
 import sys
@@ -6,16 +15,20 @@ from variables import font, button_colour, frame_colour, main_background, fall_b
 from music import music
 from Utils.json_handler import get_logged_in_user, get_stored_music, get_music_volume, get_music_muted, set_logged_in_user
 
+# Set the variables for the restrictions on username / password
 DISALLOWED_USERNAME_CHARS = [' ', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '/', '\\', '|', '{', '}', '[', ']', ':', ';', '"', "'", '<', '>', ',', '.', '?', '`', '~']
 DISALLOWED_PASSWORD_CHARS = [' ', ';', '\'', '\"']
 MAX_LENGTH = 12
 
-
+# Quit the game
 def tkquit():
     sys.exit()
 
-
+"""
+# Main class to control the scene
+"""
 class login:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, protecting, music_controller=None):
         self._img_background = None
         self._window = window
@@ -28,11 +41,23 @@ class login:
 
         self._elements = {}
         self._main_background = None
-
-    def clear_login_screen(self):
+        
+    # Removes all elements from the screen apart from the main background
+    def clear_screen(self):
         for element in self._elements.values():
-            element.place_forget()
+            try:
+                element.destroy()
+            except:
+                try:
+                    element.place_forget()
+                except:
+                    pass
+        self._elements.clear()
 
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         self._login_frame = Frame(self._window, bg=frame_colour, bd=10, relief=RIDGE)
         self._login_frame.place(relx=0.5, rely=0.5, anchor=CENTER, width=700, height=700)
@@ -87,6 +112,7 @@ class login:
             "login_frame": self._login_frame,
         }
 
+    # Places the elements on screen in their respective locations
     def create_login_screen(self):
         self._elements["enter_username_label"].place(relx=0.5, rely=0.2, anchor=CENTER)
         self._elements["username_field"].place(relx=0.5, rely=0.3125, anchor=CENTER)
@@ -97,6 +123,7 @@ class login:
         self._elements["quit_button"].place(relx=0.1, rely=0.9, anchor=CENTER)
         self._login_frame.lift()
 
+    # Validate the inputted username / password
     def validate_inputs(self):
         username = self._username.get() if hasattr(self._username, 'get') else self._username
         password = self._password.get()
@@ -130,6 +157,7 @@ class login:
 
         return True
 
+    # Attempt to login the user
     def login_pressed(self):
         self._elements["message_label"].config(text="")
 
@@ -153,6 +181,7 @@ class login:
             self._elements["message_label"].place(relx=0.5, rely=0.75, anchor=CENTER)
             self._elements["message_label"].config(text="Wrong Password Entered")
 
+    # Attempt to signup the user
     def signup_pressed(self):
         self._elements["message_label"].config(text="")
 
@@ -175,6 +204,7 @@ class login:
         Main_Menu = main_menu(self._window, self._username, self._protecting)
         Main_Menu.run()
 
+    # Check if a user is set to auto login from the json save file
     def check_pre_loaded_user(self):
         data_username = get_logged_in_user(self._protecting)
 
@@ -194,19 +224,22 @@ class login:
                 saved_muted = get_music_muted()
                 self._music_controller.apply_saved_state(saved_volume, saved_muted)
 
-            self.clear_login_screen()
+            self.clear_screen()
             Main_Menu = main_menu(self._window, self._username, self._protecting)
             Main_Menu.run()
 
+    # Inform the user that their account was deleted
     def acc_deleted(self):
         self.run()
         self._elements["message_label"].place(relx=0.5, rely=0.75, anchor=CENTER)
         self._elements["message_label"].config(text="Your account was deleted")
 
+    # Runs the file (Called remotley)
     def run_from_main_menu(self):
         self.load_utils()
         self.create_login_screen()
 
+    # Runs the file (Called remotley)
     def run(self):
         self.load_utils()
         self.create_login_screen()
