@@ -163,7 +163,7 @@ class settings_scene:
         set_music_volume(self._VOLUME)
         set_music_muted(self._MUSIC_MUTED)
         
-        self.clear_settings_screen()
+        self.clear_screen()
         from scenes.main_menu import main_menu
         Main_Menu = main_menu(self._window, self._username, self._protecting)
         Main_Menu.run()

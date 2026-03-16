@@ -1,10 +1,24 @@
+"""
+
+# Code to load the login scene
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 from tkinter import *
 import random as r
 from variables import path, card_path, font, button_colour, database_path, main_background, fall_back_colour
 from Utils.db import increment_games_and_update_money, delete_user
 from Utils.json_handler import save_json, LOADED_USER_PATH
 
+
+"""
+# Class where the cards are created
+"""
 class Card:
+    # Initalises the class with the parameters passed in and set the base class specific values
     def __init__(self, name, value, image_path):
         self._name = name
         self._value = value
@@ -15,14 +29,18 @@ class Card:
             print(f"Failed to load image for {name}: {e}")
             self._image = None
 
+    # Makes the card in a dictionary format
     def to_dict(self):
         return {
             "name": self._name,
             "value": self._value,
             "image": self._image
         }
-
+"""
+# Class where the cards are placed into a deck
+"""
 class Deck:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self):
         self._cards = []
         self._card_images = []
@@ -30,6 +48,7 @@ class Deck:
         self.load_cards()
         self.shuffle()
 
+    # Creates all the card objects and places them into the deck
     def load_cards(self):
         suits = ['S', 'D', 'C', 'H']
         ranks_values = {
@@ -51,25 +70,34 @@ class Deck:
                 if card._image:
                     self._card_images.append(card._image)
                     self._cards.append(card.to_dict())
+    
+        print(len(self._cards))
 
+    # Shuffles the cards that are in the deck
     def shuffle(self):
         n = len(self._cards)
         for i in range(n - 1, 0, -1):
             j = r.randint(0, i)
             self._cards[i], self._cards[j] = self._cards[j], self._cards[i]
 
+    # Deals the top card from the deck
     def deal_card(self):
         if self._cards:
             return self._cards.pop(0)
         return None
 
+    # Resets the deck
     def reset_deck(self):
         self._cards.clear()
         self._card_images.clear()
         self.load_cards()
         self.shuffle()
 
+"""
+# Main class to control the scene
+"""
 class singleplayer:
+    # Initialises the class with parameters passed in and set the base class specific variables 
     def __init__(self, window, username, balance, protecting):
         self._window = window
         self._username = username
@@ -212,7 +240,7 @@ class singleplayer:
         if self._split_mode:
             total1 = self.get_hand_value(self._split_hands[0])
             total2 = self.get_hand_value(self._split_hands[1])
-            txt = f"Hand1: {total1}          Hand2: {total2}"
+            txt = f"Hand 1: {total1}          Hand 2: {total2}"
         else:
             total1 = self.get_hand_value(self._user_deck)
             txt = f"Player Total: {total1}"
@@ -426,7 +454,6 @@ class singleplayer:
 
     def run(self):
         self._main_deck = Deck()
-        self._main_deck.load_cards()
         self.load_utils()
         self._elements["balance_label"] = Label(self._window, text=f"Balance: ${self._balance}", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white')
         self._elements["hit_button"] = Button(self._window, text="Hit", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='white', command=self.hit)
