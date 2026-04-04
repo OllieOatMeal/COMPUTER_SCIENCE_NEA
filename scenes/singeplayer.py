@@ -1,6 +1,6 @@
 """
 
-# Code to load the login scene
+# Code to play the game
 
 """
 
@@ -117,7 +117,7 @@ class singleplayer:
         self._current_hand_idx = 0
         self._bets = []
         self._doubled = False
-
+    # Removes all elements from the screen apart from the main background
     def clear_screen(self):
         for element in self._elements.values():
             try:
@@ -125,7 +125,11 @@ class singleplayer:
                     element.place_forget()
             except Exception as e:
                 print(f"Widget removal error: {e}")
-
+    
+    # Load the background for the scene
+    # Load any data from external files
+    # Create any elements required for the GUI / Scene
+    # Place all base elements on screen
     def load_utils(self):
         try:
             self._background = PhotoImage(file=main_background)
@@ -152,7 +156,7 @@ class singleplayer:
         self._elements["double_button"] = Button(self._window, text="Double", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='#ffffff', command=self.double_down)
         self._elements["split_button"] = Button(self._window, text="Split", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='#ffffff', command=self.split_hand)
 
-
+    # Sves the users current data and returns back to the main menu scene
     def save_and_exit(self):
         username_value = self._username.get() if hasattr(self._username, 'get') else self._username
 
@@ -165,6 +169,7 @@ class singleplayer:
         Main_Menu = main_menu(self._window, username_value, self._protecting)
         Main_Menu.run()
 
+    # Deals the initial cards
     def deal_cards(self):
         self._user_deck = []
         self._dealer_deck = []
@@ -176,6 +181,7 @@ class singleplayer:
             if dealer_card:
                 self._dealer_deck.append(dealer_card)
 
+    # Counts the value of each card that is visible on the table
     def get_hand_value(self, hand):
         value = sum(card['value'] for card in hand)
         aces = sum(1 for card in hand if card['name'].startswith('A'))
@@ -184,6 +190,7 @@ class singleplayer:
             aces -= 1
         return value
 
+    # Updates and replaces/ resizes all elements on screen after every event
     def update_ui(self):
         for key in list(self._elements.keys()):
             if key.startswith("card_slot_") or key.startswith("dealer_slot_") or key in ["player_total_label", "dealer_total_label"]:
@@ -200,6 +207,7 @@ class singleplayer:
         y_player_count = 600
         y_dealer_count = 250
 
+        # Deals with the elements position / sizes from a split
         if self._split_mode:
             for i, card in enumerate(self._split_hands[0], 1):
                 if card['image']:
@@ -261,6 +269,7 @@ class singleplayer:
         if "balance_label" in self._elements:
             self._elements["balance_label"].config(text=f"Balance: ${self._balance}")
 
+    # Draws 1 card
     def hit(self):
         if self._game_over:
             return
@@ -284,6 +293,7 @@ class singleplayer:
                 if self.get_hand_value(self._user_deck) > 21:
                     self.end_game("Bust! Dealer wins.")
 
+    # Finishes the users go and allows the dealer to play
     def stand(self):
         if self._game_over:
             return
@@ -303,6 +313,7 @@ class singleplayer:
         self.update_ui()
         self.check_winner()
 
+    # Plays the dealers hand
     def dealer_play(self):
         while self.get_hand_value(self._dealer_deck) < 17:
             card = self._main_deck.deal_card()
@@ -334,6 +345,7 @@ class singleplayer:
         else:
             self.check_winner()
 
+    # Check if the player won that hand
     def check_winner(self):
         user_val = self.get_hand_value(self._user_deck)
         self._user_val = user_val
@@ -345,6 +357,8 @@ class singleplayer:
         else:
             self.end_game("Push (Draw).")
 
+    # Pays the player if they won
+    # Allows the user to choose to play again
     def end_game(self, message, win=False):
         if self._user_val == 21 and len(self._user_deck) == 2:
             self._balance += 500
@@ -368,6 +382,7 @@ class singleplayer:
         play_again.place(x=250, y=50)
         self._elements["play_again"] = play_again
 
+    # Resets the screen for another round
     def play_again(self):
         self.check_bal()
         if "result_label" in self._elements:
@@ -388,6 +403,7 @@ class singleplayer:
         self.deal_cards()
         self.update_ui()
 
+    # Clears the screen
     def remove_card_and_total_widgets(self):
         for key in list(self._elements.keys()):
             try:
@@ -415,6 +431,7 @@ class singleplayer:
             except Exception as e:
                 print(f"Error removing {lbl_key}: {e}")
 
+    # Deletes the users account if they have no more money
     def check_bal(self):
         if self._balance <= 0:
             username_value = self._username.get() if hasattr(self._username, 'get') else self._username
@@ -437,6 +454,7 @@ class singleplayer:
         else:
             return
 
+    # Places the elements on the screen
     def create_screen(self):
         self._elements["exit_button"].place(x=50, y=50)
         if "balance_label" in self._elements:
@@ -452,19 +470,7 @@ class singleplayer:
         screenheight = self._window.winfo_screenheight()
         start_y = screenheight // 2 - 200
 
-    def run(self):
-        self._main_deck = Deck()
-        self.load_utils()
-        self._elements["balance_label"] = Label(self._window, text=f"Balance: ${self._balance}", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white')
-        self._elements["hit_button"] = Button(self._window, text="Hit", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='white', command=self.hit)
-        self._elements["stand_button"] = Button(self._window, text="Stand", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='white', command=self.stand)
-        self.create_screen()
-        self._user_deck = []
-        self._dealer_deck = []
-        self._game_over = False
-        self.deal_cards()
-        self.update_ui()
-
+    # Allows the user to double down
     def double_down(self):
         if self._split_mode:
             hand = self._split_hands[self._current_hand_idx]
@@ -498,6 +504,7 @@ class singleplayer:
             self._game_over = True
             self.dealer_play()
 
+    # Allows the user to split their hand
     def split_hand(self):
         if len(self._user_deck) != 2:
             return
@@ -512,4 +519,18 @@ class singleplayer:
         self._bets = [self._bet, self._bet]
         self._balance -= self._bet
         self._current_hand_idx = 0
+        self.update_ui()
+
+    # Runs the file (Called remotley)
+    def run(self):
+        self._main_deck = Deck()
+        self.load_utils()
+        self._elements["balance_label"] = Label(self._window, text=f"Balance: ${self._balance}", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, fg='white')
+        self._elements["hit_button"] = Button(self._window, text="Hit", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='white', command=self.hit)
+        self._elements["stand_button"] = Button(self._window, text="Stand", font=(font, 20, 'bold'), relief=RAISED, bd=10, bg=button_colour, activebackground=button_colour, fg='white', command=self.stand)
+        self.create_screen()
+        self._user_deck = []
+        self._dealer_deck = []
+        self._game_over = False
+        self.deal_cards()
         self.update_ui()

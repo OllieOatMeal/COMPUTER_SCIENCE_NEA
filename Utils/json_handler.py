@@ -1,8 +1,17 @@
+"""
+
+# Code to use the json file
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 import json
 import os
 from typing import Any, Dict, Optional
 
-
+# Loads the json file
 def load_json(path: str) -> Dict[str, Any]:
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -10,13 +19,13 @@ def load_json(path: str) -> Dict[str, Any]:
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-
+# Saves the json file
 def save_json(path: str, data: Dict[str, Any]) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-
+# Gets the data stored on the json file
 def get_value(path: str, key: str, protecting: Optional[object] = None, encrypted: bool = False) -> Optional[Any]:
     data = load_json(path)
     if key not in data:
@@ -30,7 +39,7 @@ def get_value(path: str, key: str, protecting: Optional[object] = None, encrypte
             return value
     return value
 
-
+# Sets data stored on the json file
 def set_value(path: str, key: str, value: Any, protecting: Optional[object] = None, encrypt: bool = False) -> None:
     data = load_json(path)
 
@@ -44,15 +53,15 @@ def set_value(path: str, key: str, value: Any, protecting: Optional[object] = No
 
 LOADED_USER_PATH = os.path.join("database", "loaded_user.json")
 
-
+# Gets the current logged in user
 def get_logged_in_user(protecting: Optional[object] = None) -> Optional[str]:
     return get_value(LOADED_USER_PATH, "logged_in_user", protecting=protecting, encrypted=True)
 
-
+# Sets the current logged in user
 def set_logged_in_user(username: Optional[str], protecting: Optional[object] = None, encrypt: bool = True) -> None:
     set_value(LOADED_USER_PATH, "logged_in_user", username, protecting=protecting, encrypt=encrypt)
 
-
+# Gets the current stored music
 def get_stored_music() -> Optional[int]:
     val = get_value(LOADED_USER_PATH, "stored_music")
     if val is None:
@@ -62,7 +71,7 @@ def get_stored_music() -> Optional[int]:
     except (TypeError, ValueError):
         return None
 
-
+# Sets the current stored music
 def set_stored_music(track: Optional[int]) -> None:
     if track is None:
         set_value(LOADED_USER_PATH, "stored_music", None, encrypt=False)
@@ -73,7 +82,7 @@ def set_stored_music(track: Optional[int]) -> None:
     except (TypeError, ValueError):
         set_value(LOADED_USER_PATH, "stored_music", None, encrypt=False)
 
-
+# Gets the current music volume
 def get_music_volume() -> Optional[int]:
     val = get_value(LOADED_USER_PATH, "music_volume")
     if val is None:
@@ -88,7 +97,7 @@ def get_music_volume() -> Optional[int]:
     except (TypeError, ValueError):
         return None
 
-
+# Sets the current music volume
 def set_music_volume(volume: Optional[int]) -> None:
     if volume is None:
         set_value(LOADED_USER_PATH, "music_volume", None, encrypt=False)
@@ -103,7 +112,7 @@ def set_music_volume(volume: Optional[int]) -> None:
     except (TypeError, ValueError):
         set_value(LOADED_USER_PATH, "music_volume", None, encrypt=False)
 
-
+# Gets the state of the music
 def get_music_muted() -> Optional[bool]:
     val = get_value(LOADED_USER_PATH, "music_muted")
     if val is None:
@@ -120,7 +129,7 @@ def get_music_muted() -> Optional[bool]:
         return bool(val)
     return None
 
-
+# Sets the state of the music
 def set_music_muted(is_muted: Optional[bool]) -> None:
     if is_muted is None:
         set_value(LOADED_USER_PATH, "music_muted", None, encrypt=False)

@@ -1,13 +1,23 @@
+"""
+
+# Code to handle accessing the database
+
+"""
+
+"""
+# Import nessicary functions/ procedures
+"""
 import sqlite3
 from typing import List, Tuple, Optional
 from datetime import datetime, timezone
 from variables import database_path
 
 
+# Returns the current date & time in the ISO format
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
-
+# Preloads the database
 def _ensure_schema(conn: sqlite3.Connection) -> None:
     try:
         cur = conn.cursor()
@@ -31,13 +41,13 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
     except Exception:
         return
 
-
+# Connects to the database
 def _connect():
     conn = sqlite3.connect(database_path)
     _ensure_schema(conn)
     return conn
 
-
+# Encrypts the username
 def _encode_username(username: str, protecting=None) -> str:
     if protecting:
         try:
@@ -46,7 +56,7 @@ def _encode_username(username: str, protecting=None) -> str:
             return username
     return username
 
-
+# Gets the users password
 def get_user_password(username: str, protecting=None) -> Optional[str]:
     try:
         conn = _connect()
@@ -64,7 +74,7 @@ def get_user_password(username: str, protecting=None) -> Optional[str]:
     except Exception:
         return None
 
-
+# Checks if a username already exists
 def user_exists(username: str, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -77,7 +87,7 @@ def user_exists(username: str, protecting=None) -> bool:
     except Exception:
         return False
 
-
+# Creates a new user with predefined perameters
 def create_user(
     username: str,
     password: str,
@@ -133,7 +143,7 @@ def create_user(
     except Exception:
         return False
 
-
+# Gets the users balance
 def get_money(username: str, protecting=None) -> int:
     try:
         conn = _connect()
@@ -152,7 +162,7 @@ def get_money(username: str, protecting=None) -> int:
     except Exception:
         return 0
 
-
+# Gets the users games played value
 def get_games_played(username: str, protecting=None) -> int:
     try:
         conn = _connect()
@@ -171,7 +181,7 @@ def get_games_played(username: str, protecting=None) -> int:
     except Exception:
         return 0
 
-
+# Sets the users current balance and games played
 def update_money_and_games(username: str, money: int, games_played: int, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -200,7 +210,7 @@ def update_money_and_games(username: str, money: int, games_played: int, protect
     except Exception:
         return False
 
-
+# Sets the users balance and games played after each game
 def increment_games_and_update_money(username: str, money: int, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -240,7 +250,7 @@ def increment_games_and_update_money(username: str, money: int, protecting=None)
     except Exception:
         return False
 
-
+# Deletes a user from the database
 def delete_user(username: str, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -253,7 +263,7 @@ def delete_user(username: str, protecting=None) -> bool:
     except Exception:
         return False
 
-
+# Sets the users last logged in timestamp
 def update_last_login(username: str, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -279,7 +289,7 @@ def update_last_login(username: str, protecting=None) -> bool:
     except Exception:
         return False
 
-
+# Gets the data needed to display the leaderboard
 def get_leaderboard(protecting=None, order_by: str = "GamesPlayed") -> List[Tuple[str, int, int]]:
     try:
         conn = _connect()
@@ -316,7 +326,7 @@ def get_leaderboard(protecting=None, order_by: str = "GamesPlayed") -> List[Tupl
     except Exception:
         return []
 
-
+# Gets the admin status of a user
 def get_is_admin(username: str, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -338,7 +348,7 @@ def get_is_admin(username: str, protecting=None) -> bool:
     except Exception:
         return False
 
-
+# Sets the admin status of a user
 def set_is_admin(username: str, is_admin: bool, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -363,7 +373,7 @@ def set_is_admin(username: str, is_admin: bool, protecting=None) -> bool:
     except Exception:
         return False
 
-
+# Gets all usernames from the database
 def get_all_usernames(protecting=None) -> List[str]:
     try:
         conn = _connect()
@@ -379,7 +389,7 @@ def get_all_usernames(protecting=None) -> List[str]:
     except Exception:
         return []
 
-
+# Gets all the data from a specific user
 def get_user_data(username: str, protecting=None) -> Optional[dict]:
     try:
         conn = _connect()
@@ -453,7 +463,7 @@ def get_user_data(username: str, protecting=None) -> Optional[dict]:
     except Exception:
         return None
 
-
+# Sets the users password
 def update_user_password(username: str, new_password: str, protecting=None) -> bool:
     try:
         conn = _connect()
@@ -478,7 +488,7 @@ def update_user_password(username: str, new_password: str, protecting=None) -> b
     except Exception:
         return False
 
-
+# Sets the users balance
 def update_user_balance(username: str, new_balance: int, protecting=None) -> bool:
     try:
         conn = _connect()
