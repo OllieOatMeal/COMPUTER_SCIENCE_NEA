@@ -174,7 +174,7 @@ class login:
 
         if stored_password == self._password.get():
             update_last_login(username_value, self._protecting)
-            self.clear_login_screen()
+            self.clear_screen()
             Main_Menu = main_menu(self._window, self._username, self._protecting)
             Main_Menu.run()
         else:
