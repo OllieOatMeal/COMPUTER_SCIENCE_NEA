@@ -4,7 +4,7 @@ import sqlite3
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from variables import database_path
+from Utils.variables import database_path
 from Utils.encryption_service import EncryptionService
 from Utils.db import (
     set_is_admin,

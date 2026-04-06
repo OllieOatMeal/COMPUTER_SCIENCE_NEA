@@ -8,8 +8,8 @@
 # Import nessicary functions/ procedures
 """
 from tkinter import *
-from music import music
-from variables import frame_colour, button_colour, font, main_background, fall_back_colour
+from Utils.music import music
+from Utils.variables import frame_colour, button_colour, font, main_background, fall_back_colour
 import pygame
 from Utils.json_handler import set_stored_music, get_music_volume, get_music_muted, set_music_volume, set_music_muted
 

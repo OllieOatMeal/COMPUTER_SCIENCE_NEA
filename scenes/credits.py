@@ -7,7 +7,7 @@
 # Import nessicary functions/ procedures
 """
 from tkinter import *
-from variables import frame_colour, button_colour, font, main_background, fall_back_colour
+from Utils.variables import frame_colour, button_colour, font, main_background, fall_back_colour
 
 """
 # Main class to control the scene

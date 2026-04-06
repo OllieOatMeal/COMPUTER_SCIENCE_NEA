@@ -6,10 +6,10 @@ It initiates the window, begins music player, loads the encryption/decryption, l
 
 from tkinter import *
 from scenes.login_scene import login
-from music import music
+from Utils.music import music
 from Utils.json_handler import get_stored_music, get_music_volume, get_music_muted
 from Utils.encryption_service import EncryptionService
-from variables import game_name, game_version, game_creator
+from Utils.variables import game_name, game_version, game_creator
 
 """
 Main Class

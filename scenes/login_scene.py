@@ -11,8 +11,8 @@ from Utils.db import get_user_password, user_exists, create_user, update_last_lo
 from tkinter import *
 import sys
 from scenes.main_menu import main_menu
-from variables import font, button_colour, frame_colour, main_background, fall_back_colour
-from music import music
+from Utils.variables import font, button_colour, frame_colour, main_background, fall_back_colour
+from Utils.music import music
 from Utils.json_handler import get_logged_in_user, get_stored_music, get_music_volume, get_music_muted, set_logged_in_user
 
 # Set the variables for the restrictions on username / password

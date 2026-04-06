@@ -9,7 +9,7 @@
 """
 import sys
 from tkinter import *
-from variables import frame_colour, button_colour, font, main_background, fall_back_colour
+from Utils.variables import frame_colour, button_colour, font, main_background, fall_back_colour
 from Utils.json_handler import set_logged_in_user
 
 # Quit the game

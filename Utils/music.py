@@ -1,5 +1,5 @@
 import pygame
-from variables import *
+from Utils.variables import *
 
 
 def load_music():

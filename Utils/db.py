@@ -10,7 +10,7 @@
 import sqlite3
 from typing import List, Tuple, Optional
 from datetime import datetime, timezone
-from variables import database_path
+from Utils.variables import database_path
 
 
 # Returns the current date & time in the ISO format

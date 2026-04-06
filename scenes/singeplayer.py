@@ -9,7 +9,7 @@
 """
 from tkinter import *
 import random as r
-from variables import path, card_path, font, button_colour, database_path, main_background, fall_back_colour
+from Utils.variables import path, card_path, font, button_colour, database_path, main_background, fall_back_colour
 from Utils.db import increment_games_and_update_money, delete_user
 from Utils.json_handler import save_json, LOADED_USER_PATH
 

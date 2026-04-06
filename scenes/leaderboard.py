@@ -9,7 +9,7 @@
 """
 from tkinter import *
 from Utils.db import get_leaderboard
-from variables import frame_colour, button_colour, font, database_path, main_background, fall_back_colour
+from Utils.variables import frame_colour, button_colour, font, database_path, main_background, fall_back_colour
 
 """
 # Main class to control the scene

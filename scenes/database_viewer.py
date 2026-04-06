@@ -9,7 +9,7 @@
 """
 from tkinter import *
 from tkinter import ttk
-from variables import font, button_colour, frame_colour, main_background, fall_back_colour
+from Utils.variables import font, button_colour, frame_colour, main_background, fall_back_colour
 from Utils.db import get_leaderboard, get_user_data, get_all_usernames
 
 """

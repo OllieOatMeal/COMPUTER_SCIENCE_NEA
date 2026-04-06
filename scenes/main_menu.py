@@ -14,7 +14,7 @@ from scenes.credits import credits_scene
 from scenes.settings import settings_scene
 from scenes.main_game import main_game
 from Utils.db import get_is_admin
-from variables import quotes_path, font, button_colour, frame_colour, main_background, fall_back_colour
+from Utils.variables import quotes_path, font, button_colour, frame_colour, main_background, fall_back_colour
 
 # Loads a random quote from an external .txt file
 def get_random_quote():
